@@ -1,1266 +1,700 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FireOS Desktop</title>
-<link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --fire-orange: #FF6B00;
-    --fire-amber: #FF9500;
-    --fire-red: #E8320A;
-    --win-blue: #0067C0;
-    --win-dark: #1a1a2e;
-    --win-glass: rgba(30,30,50,0.72);
-    --win-glass-light: rgba(255,255,255,0.08);
-    --taskbar-h: 48px;
-    --accent: #FF6B00;
-    --accent2: #FF9500;
-    --text: #ffffff;
-    --text-dim: rgba(255,255,255,0.65);
-    --border-glass: rgba(255,150,0,0.18);
-    --shadow: 0 8px 32px rgba(0,0,0,0.5);
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PyroScroll — School Announcements</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-  
-  body {
-    width: 100vw; height: 100vh; overflow: hidden;
-    font-family: 'Segoe UI', 'Nunito', sans-serif;
-    color: var(--text);
-    background: #000;
-  }
+    :root {
+      --bg1: #0f1923;
+      --bg2: #152030;
+      --accent: #e8c27a;
+      --accent2: #6dd5c4;
+      --glass-bg: rgba(255,255,255,0.045);
+      --glass-border: rgba(255,255,255,0.10);
+      --glass-hover: rgba(255,255,255,0.07);
+      --text: #eef0f3;
+      --text-dim: rgba(238,240,243,0.5);
+      --radius: 18px;
+      --shadow: 0 8px 40px rgba(0,0,0,0.35);
+      --tag-blue: rgba(100,180,255,0.15);
+      --tag-green: rgba(100,220,160,0.15);
+      --tag-red: rgba(255,120,120,0.15);
+      --tag-yellow: rgba(240,200,80,0.15);
+    }
 
-  /* ══════════════ DESKTOP ══════════════ */
-  #desktop {
-    width: 100%; height: calc(100% - var(--taskbar-h));
-    position: relative; overflow: hidden;
-    background:
-      radial-gradient(ellipse 120% 80% at 80% 110%, #FF6B0033 0%, transparent 60%),
-      radial-gradient(ellipse 80% 60% at 10% -10%, #FF950022 0%, transparent 55%),
-      radial-gradient(ellipse 60% 80% at 50% 50%, #0a0a1a 0%, #111130 100%),
-      linear-gradient(135deg, #0d0d2b 0%, #1a0a0a 50%, #0a0d1a 100%);
-  }
+    html, body {
+      min-height: 100vh;
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--bg1);
+      color: var(--text);
+      overflow-x: hidden;
+    }
 
-  /* Animated background stars */
-  #desktop::before {
-    content: '';
-    position: absolute; inset: 0;
-    background-image:
-      radial-gradient(1px 1px at 10% 15%, rgba(255,200,100,0.6) 0%, transparent 100%),
-      radial-gradient(1px 1px at 30% 5%, rgba(255,255,255,0.4) 0%, transparent 100%),
-      radial-gradient(1.5px 1.5px at 55% 20%, rgba(255,180,80,0.5) 0%, transparent 100%),
-      radial-gradient(1px 1px at 70% 8%, rgba(255,255,255,0.3) 0%, transparent 100%),
-      radial-gradient(2px 2px at 85% 18%, rgba(255,150,0,0.4) 0%, transparent 100%),
-      radial-gradient(1px 1px at 20% 40%, rgba(255,255,255,0.25) 0%, transparent 100%),
-      radial-gradient(1px 1px at 90% 35%, rgba(255,200,100,0.35) 0%, transparent 100%),
-      radial-gradient(1.5px 1.5px at 45% 60%, rgba(255,255,255,0.2) 0%, transparent 100%),
-      radial-gradient(1px 1px at 5% 70%, rgba(255,150,0,0.3) 0%, transparent 100%),
-      radial-gradient(2px 2px at 65% 75%, rgba(255,255,255,0.15) 0%, transparent 100%);
-    pointer-events: none;
-  }
+    /* ── BACKGROUND ── */
+    .bg-orbs {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    }
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.25;
+      animation: drift 18s ease-in-out infinite alternate;
+    }
+    .orb1 { width: 520px; height: 520px; background: #1a5c8a; top: -120px; left: -120px; animation-duration: 20s; }
+    .orb2 { width: 400px; height: 400px; background: #1e7a6a; bottom: -80px; right: -80px; animation-duration: 24s; animation-delay: -6s; }
+    .orb3 { width: 300px; height: 300px; background: #7a5c1e; top: 40%; left: 55%; animation-duration: 16s; animation-delay: -3s; }
+    @keyframes drift {
+      from { transform: translate(0,0) scale(1); }
+      to   { transform: translate(30px, 20px) scale(1.08); }
+    }
 
-  /* Aurora glow effect */
-  #desktop::after {
-    content: '';
-    position: absolute; inset: 0;
-    background:
-      radial-gradient(ellipse 40% 30% at 75% 80%, rgba(255,107,0,0.15) 0%, transparent 70%),
-      radial-gradient(ellipse 30% 20% at 20% 90%, rgba(255,149,0,0.1) 0%, transparent 70%);
-    pointer-events: none;
-    animation: aurora 8s ease-in-out infinite alternate;
-  }
+    /* ── LAYOUT ── */
+    .app { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
 
-  @keyframes aurora {
-    0% { opacity: 0.6; transform: scale(1); }
-    100% { opacity: 1; transform: scale(1.05); }
-  }
+    /* ── HEADER ── */
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 36px;
+      background: rgba(15,25,35,0.6);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--glass-border);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .logo-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .logo-text {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.35rem;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+    .logo-text span { color: var(--accent); }
 
-  /* ══════════════ DESKTOP ICONS ══════════════ */
-  #icon-grid {
-    position: absolute;
-    top: 20px; left: 20px;
-    display: flex; flex-direction: column;
-    flex-wrap: wrap; gap: 8px;
-    max-height: calc(100% - 40px);
-    width: 90px;
-    z-index: 10;
-  }
+    .header-right { display: flex; align-items: center; gap: 14px; }
 
-  .desk-icon {
-    display: flex; flex-direction: column;
-    align-items: center; gap: 5px;
-    padding: 8px 4px; border-radius: 8px;
-    cursor: pointer; width: 82px;
-    transition: background 0.15s;
-  }
-  .desk-icon:hover { background: rgba(255,107,0,0.18); }
-  .desk-icon:active { background: rgba(255,107,0,0.3); }
+    /* ── GOOGLE LOGIN BTN ── */
+    .btn-google {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 18px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 50px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      text-decoration: none;
+    }
+    .btn-google:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.2);
+      transform: translateY(-1px);
+    }
+    .btn-google svg { flex-shrink: 0; }
 
-  .desk-icon .ico {
-    width: 44px; height: 44px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 26px; position: relative;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-  }
-  .desk-icon .lbl {
-    font-size: 11px; font-weight: 600; text-align: center;
-    line-height: 1.2; text-shadow: 0 1px 4px rgba(0,0,0,0.8);
-    letter-spacing: 0.01em;
-  }
+    .user-chip {
+      display: none;
+      align-items: center; gap: 10px;
+      padding: 6px 14px 6px 6px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 50px;
+      font-size: 0.85rem;
+    }
+    .user-chip img {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 1px solid var(--glass-border);
+    }
+    .user-chip.visible { display: flex; }
 
-  /* ══════════════ TASKBAR ══════════════ */
-  #taskbar {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    height: var(--taskbar-h);
-    background: rgba(12,12,20,0.92);
-    backdrop-filter: blur(24px) saturate(180%);
-    border-top: 1px solid rgba(255,107,0,0.2);
-    display: flex; align-items: center;
-    padding: 0 8px; gap: 4px;
-    z-index: 9000;
-    box-shadow: 0 -4px 24px rgba(0,0,0,0.5);
-  }
+    .btn-signout {
+      padding: 7px 14px;
+      background: rgba(255,80,80,0.1);
+      border: 1px solid rgba(255,80,80,0.2);
+      border-radius: 50px;
+      color: #ff8080;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-signout:hover { background: rgba(255,80,80,0.2); }
 
-  #start-btn {
-    width: 40px; height: 40px; border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: background 0.15s;
-    flex-shrink: 0;
-    background: transparent;
-    border: none;
-  }
-  #start-btn:hover { background: rgba(255,107,0,0.2); }
-  #start-btn.active { background: rgba(255,107,0,0.3); }
-  #start-btn svg { width: 22px; height: 22px; }
+    /* ── MAIN ── */
+    main {
+      flex: 1;
+      max-width: 860px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 40px 24px 60px;
+    }
 
-  #search-bar {
-    display: flex; align-items: center; gap: 8px;
-    background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 20px; padding: 0 12px;
-    height: 34px; cursor: text; min-width: 160px;
-    transition: all 0.2s;
-  }
-  #search-bar:hover {
-    background: rgba(255,255,255,0.1);
-    border-color: rgba(255,107,0,0.4);
-  }
-  #search-bar span { font-size: 12px; color: var(--text-dim); }
+    .page-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      font-weight: 400;
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+    }
+    .page-sub {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      margin-bottom: 36px;
+    }
 
-  #taskbar-apps { display: flex; align-items: center; gap: 2px; flex: 1; padding: 0 8px; }
+    /* ── POST FORM ── */
+    .post-form-wrap {
+      margin-bottom: 36px;
+      display: none;
+      animation: fadeUp 0.3s ease;
+    }
+    .post-form-wrap.visible { display: block; }
 
-  .tb-app {
-    height: 40px; padding: 0 10px; border-radius: 6px;
-    display: flex; align-items: center; gap: 6px;
-    cursor: pointer; transition: background 0.15s;
-    font-size: 13px; font-weight: 500;
-    position: relative; white-space: nowrap;
-  }
-  .tb-app:hover { background: rgba(255,255,255,0.08); }
-  .tb-app.active {
-    background: rgba(255,107,0,0.18);
-  }
-  .tb-app.active::after {
-    content: ''; position: absolute;
-    bottom: -1px; left: 50%; transform: translateX(-50%);
-    width: 60%; height: 2px; border-radius: 2px;
-    background: var(--fire-orange);
-  }
-  .tb-app .ico { font-size: 18px; }
+    .glass-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
 
-  #systray {
-    display: flex; align-items: center; gap: 8px;
-    padding: 0 8px; flex-shrink: 0;
-  }
-  .tray-icon {
-    font-size: 16px; cursor: pointer; opacity: 0.75;
-    transition: opacity 0.15s;
-    padding: 4px;
-  }
-  .tray-icon:hover { opacity: 1; }
+    .form-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
 
-  #clock {
-    display: flex; flex-direction: column;
-    align-items: flex-end; cursor: default;
-    padding: 2px 8px; border-radius: 6px;
-    transition: background 0.15s;
-  }
-  #clock:hover { background: rgba(255,255,255,0.08); }
-  #clock-time { font-size: 13px; font-weight: 600; letter-spacing: 0.02em; }
-  #clock-date { font-size: 10px; color: var(--text-dim); }
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      padding: 11px 14px;
+      transition: border-color 0.2s, background 0.2s;
+      outline: none;
+    }
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      border-color: var(--accent);
+      background: rgba(232,194,122,0.05);
+    }
+    .form-textarea { resize: vertical; min-height: 90px; }
+    .form-select option { background: #1a2a38; color: var(--text); }
 
-  /* ══════════════ START MENU ══════════════ */
-  #start-menu {
-    position: fixed; bottom: calc(var(--taskbar-h) + 8px); left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    width: 660px; max-width: 95vw;
-    background: rgba(12,12,22,0.96);
-    backdrop-filter: blur(40px) saturate(200%);
-    border: 1px solid rgba(255,107,0,0.2);
-    border-radius: 16px;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04);
-    z-index: 9500; padding: 24px;
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.2s ease, transform 0.2s ease;
-  }
-  #start-menu.open {
-    opacity: 1; pointer-events: all;
-    transform: translateX(-50%) translateY(0);
-  }
+    .form-row { display: flex; gap: 14px; margin-bottom: 16px; }
+    .form-row > * { flex: 1; }
+    .form-group { margin-bottom: 16px; }
 
-  #start-search {
-    width: 100%; background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,107,0,0.25);
-    border-radius: 24px; padding: 10px 18px;
-    color: white; font-size: 14px; outline: none;
-    font-family: inherit; margin-bottom: 20px;
-    transition: border-color 0.2s;
-  }
-  #start-search:focus { border-color: var(--fire-orange); }
-  #start-search::placeholder { color: rgba(255,255,255,0.4); }
+    .btn-post {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 22px;
+      background: linear-gradient(135deg, var(--accent), #d4a840);
+      border: none; border-radius: 50px;
+      color: #1a1000;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .btn-post:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-post:active { transform: translateY(0); }
 
-  .sm-section-title {
-    font-size: 11px; font-weight: 700;
-    color: rgba(255,107,0,0.8); letter-spacing: 0.1em;
-    text-transform: uppercase; margin-bottom: 12px;
-  }
+    /* ── TOGGLE POST BTN ── */
+    .btn-new-post {
+      display: none;
+      align-items: center; gap: 8px;
+      padding: 10px 20px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 50px;
+      color: var(--accent);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 28px;
+      transition: background 0.2s, transform 0.15s;
+      backdrop-filter: blur(12px);
+    }
+    .btn-new-post.visible { display: flex; }
+    .btn-new-post:hover { background: var(--glass-hover); transform: translateY(-1px); }
 
-  .sm-apps {
-    display: grid; grid-template-columns: repeat(6, 1fr);
-    gap: 8px; margin-bottom: 20px;
-  }
-  .sm-app {
-    display: flex; flex-direction: column;
-    align-items: center; gap: 6px; padding: 10px 4px;
-    border-radius: 10px; cursor: pointer;
-    transition: background 0.15s;
-  }
-  .sm-app:hover { background: rgba(255,107,0,0.15); }
-  .sm-app .ico {
-    width: 44px; height: 44px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 24px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-  }
-  .sm-app .lbl { font-size: 11px; text-align: center; color: var(--text-dim); }
+    /* ── FILTERS ── */
+    .filters {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .filter-btn {
+      padding: 6px 16px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 50px;
+      color: var(--text-dim);
+      font-size: 0.82rem;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: rgba(232,194,122,0.12);
+      border-color: rgba(232,194,122,0.4);
+      color: var(--accent);
+    }
 
-  .sm-recents { display: flex; flex-direction: column; gap: 4px; }
-  .sm-recent {
-    display: flex; align-items: center; gap: 12px;
-    padding: 8px 10px; border-radius: 8px; cursor: pointer;
-    transition: background 0.15s;
-  }
-  .sm-recent:hover { background: rgba(255,255,255,0.06); }
-  .sm-recent .ico { font-size: 20px; width: 32px; text-align: center; }
-  .sm-recent .info { flex: 1; }
-  .sm-recent .name { font-size: 13px; }
-  .sm-recent .sub { font-size: 11px; color: var(--text-dim); }
+    /* ── ANNOUNCEMENT CARDS ── */
+    .announcements { display: flex; flex-direction: column; gap: 16px; }
 
-  .sm-footer {
-    display: flex; justify-content: space-between;
-    align-items: center; margin-top: 20px;
-    padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.07);
-  }
-  .sm-user {
-    display: flex; align-items: center; gap: 10px; cursor: pointer;
-  }
-  .sm-avatar {
-    width: 36px; height: 36px; border-radius: 50%;
-    background: linear-gradient(135deg, var(--fire-orange), var(--fire-red));
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; font-weight: 700;
-  }
-  .sm-username { font-size: 13px; font-weight: 600; }
-  .sm-power-btns { display: flex; gap: 6px; }
-  .sm-power-btn {
-    width: 34px; height: 34px; border-radius: 8px;
-    background: rgba(255,255,255,0.06); border: none;
-    color: white; font-size: 16px; cursor: pointer;
-    transition: background 0.15s; display: flex;
-    align-items: center; justify-content: center;
-  }
-  .sm-power-btn:hover { background: rgba(255,107,0,0.25); }
+    .ann-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 22px 26px;
+      box-shadow: var(--shadow);
+      transition: border-color 0.2s, transform 0.2s;
+      animation: fadeUp 0.35s ease both;
+      position: relative;
+      overflow: hidden;
+    }
+    .ann-card::before {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 3px;
+      border-radius: 3px 0 0 3px;
+    }
+    .ann-card[data-cat="general"]::before   { background: #6db3ff; }
+    .ann-card[data-cat="event"]::before     { background: var(--accent2); }
+    .ann-card[data-cat="urgent"]::before    { background: #ff7b7b; }
+    .ann-card[data-cat="academic"]::before  { background: var(--accent); }
 
-  /* ══════════════ WINDOWS ══════════════ */
-  .win {
-    position: absolute; min-width: 320px; min-height: 200px;
-    background: rgba(14,14,26,0.95);
-    backdrop-filter: blur(30px) saturate(160%);
-    border: 1px solid rgba(255,107,0,0.18);
-    border-radius: 12px; overflow: hidden;
-    box-shadow: 0 16px 48px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04);
-    display: flex; flex-direction: column;
-    resize: both;
-    transition: box-shadow 0.2s;
-  }
-  .win:focus-within, .win.focused {
-    border-color: rgba(255,107,0,0.4);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,107,0,0.15);
-  }
+    .ann-card:hover {
+      border-color: rgba(255,255,255,0.18);
+      transform: translateY(-2px);
+    }
 
-  .win-titlebar {
-    display: flex; align-items: center;
-    padding: 0 12px; height: 36px;
-    background: rgba(255,255,255,0.04);
-    border-bottom: 1px solid rgba(255,107,0,0.12);
-    cursor: move; flex-shrink: 0; gap: 8px;
-  }
+    .ann-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+    .ann-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.15rem;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      flex: 1;
+    }
+    .ann-tag {
+      padding: 3px 11px;
+      border-radius: 50px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .tag-general  { background: var(--tag-blue);   color: #7bc8ff; border: 1px solid rgba(100,180,255,0.25); }
+    .tag-event    { background: var(--tag-green);  color: #6addb4; border: 1px solid rgba(100,220,160,0.25); }
+    .tag-urgent   { background: var(--tag-red);    color: #ff9090; border: 1px solid rgba(255,120,120,0.25); }
+    .tag-academic { background: var(--tag-yellow); color: #f0c84a; border: 1px solid rgba(240,200,80,0.25); }
 
-  .win-icon { font-size: 16px; }
-  .win-title { flex: 1; font-size: 13px; font-weight: 600; color: var(--text-dim); }
-  .win-controls { display: flex; gap: 4px; }
-  .win-btn {
-    width: 28px; height: 22px; border-radius: 5px;
-    border: none; cursor: pointer; font-size: 12px;
-    display: flex; align-items: center; justify-content: center;
-    transition: background 0.15s; color: white;
-    background: rgba(255,255,255,0.06);
-  }
-  .win-btn:hover { background: rgba(255,255,255,0.12); }
-  .win-btn.close:hover { background: #c42b1c; }
-  .win-btn.minimize:hover { background: rgba(255,107,0,0.3); }
-  .win-btn.maximize:hover { background: rgba(255,107,0,0.3); }
+    .ann-body {
+      font-size: 0.92rem;
+      color: rgba(238,240,243,0.78);
+      line-height: 1.65;
+      margin-bottom: 14px;
+    }
 
-  .win-body {
-    flex: 1; overflow: auto; position: relative;
-  }
+    .ann-meta {
+      display: flex; align-items: center; gap: 14px;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+    }
+    .ann-meta-author { display: flex; align-items: center; gap: 6px; }
+    .ann-meta-author img {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 1px solid var(--glass-border);
+    }
+    .ann-delete {
+      margin-left: auto;
+      background: none; border: none;
+      color: var(--text-dim);
+      cursor: pointer; font-size: 0.78rem;
+      transition: color 0.2s;
+      padding: 2px 6px; border-radius: 6px;
+    }
+    .ann-delete:hover { color: #ff8080; background: rgba(255,80,80,0.08); }
 
-  /* scrollbar */
-  .win-body::-webkit-scrollbar { width: 6px; }
-  .win-body::-webkit-scrollbar-track { background: transparent; }
-  .win-body::-webkit-scrollbar-thumb { background: rgba(255,107,0,0.3); border-radius: 3px; }
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-dim);
+    }
+    .empty-state .es-icon { font-size: 2.5rem; margin-bottom: 14px; opacity: 0.4; }
+    .empty-state p { font-size: 0.95rem; }
 
-  /* ══════════════ FILE EXPLORER ══════════════ */
-  #win-explorer .win-body {
-    display: flex; flex-direction: column;
-  }
-  .explorer-toolbar {
-    display: flex; align-items: center; gap: 6px;
-    padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.06);
-    background: rgba(255,255,255,0.02); flex-shrink: 0;
-  }
-  .explorer-navbtn {
-    width: 28px; height: 28px; border-radius: 6px;
-    background: rgba(255,255,255,0.06); border: none;
-    color: white; font-size: 14px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .explorer-navbtn:hover { background: rgba(255,107,0,0.2); }
-  .explorer-path {
-    flex: 1; background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1); border-radius: 20px;
-    padding: 4px 12px; color: white; font-size: 12px;
-    display: flex; align-items: center; gap: 4px;
-  }
-  .explorer-body { display: flex; flex: 1; overflow: hidden; }
-  .explorer-sidebar {
-    width: 160px; border-right: 1px solid rgba(255,255,255,0.05);
-    padding: 8px 0; flex-shrink: 0; overflow-y: auto;
-  }
-  .sidebar-item {
-    display: flex; align-items: center; gap: 8px;
-    padding: 7px 14px; font-size: 12px; cursor: pointer;
-    transition: background 0.1s; color: var(--text-dim);
-    border-left: 2px solid transparent;
-  }
-  .sidebar-item:hover { background: rgba(255,255,255,0.05); color: white; }
-  .sidebar-item.active {
-    background: rgba(255,107,0,0.12); color: white;
-    border-left-color: var(--fire-orange);
-  }
-  .sidebar-item .ico { font-size: 15px; }
+    /* ── LOGIN PROMPT ── */
+    .login-prompt {
+      background: rgba(232,194,122,0.07);
+      border: 1px solid rgba(232,194,122,0.2);
+      border-radius: var(--radius);
+      padding: 22px 26px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      margin-bottom: 36px;
+      backdrop-filter: blur(12px);
+    }
+    .lp-text { font-size: 0.9rem; color: var(--text-dim); }
+    .lp-text strong { color: var(--accent); }
 
-  .explorer-files {
-    flex: 1; padding: 12px; overflow-y: auto;
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-    gap: 8px; align-content: start;
-  }
-  .file-item {
-    display: flex; flex-direction: column;
-    align-items: center; gap: 4px; padding: 8px 4px;
-    border-radius: 8px; cursor: pointer; transition: background 0.15s;
-  }
-  .file-item:hover { background: rgba(255,107,0,0.12); }
-  .file-item:active { background: rgba(255,107,0,0.22); }
-  .file-item .ico { font-size: 28px; }
-  .file-item .lbl { font-size: 10px; text-align: center; color: var(--text-dim); line-height: 1.2; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
 
-  /* ══════════════ BROWSER WINDOW ══════════════ */
-  .browser-bar {
-    display: flex; align-items: center; gap: 6px;
-    padding: 8px 10px; background: rgba(255,255,255,0.02);
-    border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0;
-  }
-  .browser-url {
-    flex: 1; background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1); border-radius: 20px;
-    padding: 5px 14px; color: white; font-size: 12px;
-    outline: none; font-family: inherit;
-    transition: border-color 0.2s;
-  }
-  .browser-url:focus { border-color: var(--fire-orange); }
-  .browser-navbtn {
-    width: 28px; height: 28px; border-radius: 6px;
-    background: rgba(255,255,255,0.06); border: none;
-    color: white; font-size: 14px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .browser-navbtn:hover { background: rgba(255,107,0,0.2); }
-  .browser-content {
-    flex: 1; display: flex; align-items: center; justify-content: center;
-    flex-direction: column; gap: 16px; padding: 24px;
-  }
-  .browser-logo {
-    font-size: 48px; line-height: 1;
-  }
-  .browser-tagline {
-    font-size: 22px; font-weight: 700;
-    background: linear-gradient(135deg, var(--fire-orange), var(--fire-amber));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    text-align: center;
-  }
-  .browser-quick-links {
-    display: grid; grid-template-columns: repeat(4, 1fr);
-    gap: 10px; width: 100%; max-width: 380px;
-  }
-  .quick-link {
-    display: flex; flex-direction: column;
-    align-items: center; gap: 6px; padding: 12px 8px;
-    background: rgba(255,255,255,0.05); border-radius: 10px;
-    cursor: pointer; transition: background 0.15s;
-    border: 1px solid rgba(255,255,255,0.06);
-  }
-  .quick-link:hover { background: rgba(255,107,0,0.15); border-color: rgba(255,107,0,0.3); }
-  .quick-link .ico { font-size: 22px; }
-  .quick-link .lbl { font-size: 10px; color: var(--text-dim); }
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: rgba(30,50,60,0.9);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(20px);
+      padding: 12px 22px;
+      border-radius: 50px;
+      font-size: 0.88rem;
+      color: var(--text);
+      z-index: 999;
+      opacity: 0;
+      transition: opacity 0.25s, transform 0.25s;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* ══════════════ SETTINGS WINDOW ══════════════ */
-  .settings-body {
-    display: flex; height: 100%;
-  }
-  .settings-nav {
-    width: 200px; padding: 12px 0;
-    border-right: 1px solid rgba(255,255,255,0.06);
-    flex-shrink: 0;
-  }
-  .settings-nav-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 16px; cursor: pointer; font-size: 13px;
-    color: var(--text-dim); transition: all 0.15s;
-    border-left: 2px solid transparent;
-  }
-  .settings-nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
-  .settings-nav-item.active {
-    background: rgba(255,107,0,0.12); color: white;
-    border-left-color: var(--fire-orange);
-  }
-  .settings-content { flex: 1; padding: 20px; overflow-y: auto; }
-  .settings-section-title {
-    font-size: 18px; font-weight: 700; margin-bottom: 16px;
-    color: white;
-  }
-  .settings-card {
-    background: rgba(255,255,255,0.04); border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.07); margin-bottom: 10px;
-    overflow: hidden;
-  }
-  .settings-row {
-    display: flex; align-items: center; padding: 14px 16px;
-    border-bottom: 1px solid rgba(255,255,255,0.05); gap: 12px;
-  }
-  .settings-row:last-child { border-bottom: none; }
-  .settings-row .ico { font-size: 20px; width: 28px; text-align: center; }
-  .settings-row .info { flex: 1; }
-  .settings-row .info .name { font-size: 13px; font-weight: 600; }
-  .settings-row .info .sub { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
-
-  /* Toggle switch */
-  .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
-  .toggle input { display: none; }
-  .toggle-slider {
-    position: absolute; inset: 0; border-radius: 12px;
-    background: rgba(255,255,255,0.15); cursor: pointer;
-    transition: background 0.2s;
-  }
-  .toggle-slider::after {
-    content: ''; position: absolute;
-    width: 18px; height: 18px; border-radius: 50%;
-    background: white; top: 3px; left: 3px;
-    transition: transform 0.2s;
-  }
-  .toggle input:checked + .toggle-slider { background: var(--fire-orange); }
-  .toggle input:checked + .toggle-slider::after { transform: translateX(20px); }
-
-  /* ══════════════ NOTEPAD ══════════════ */
-  .notepad-toolbar {
-    display: flex; gap: 0;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    flex-shrink: 0;
-  }
-  .notepad-menu {
-    padding: 5px 12px; font-size: 12px; cursor: pointer;
-    color: var(--text-dim); transition: all 0.15s; border-radius: 0;
-  }
-  .notepad-menu:hover { background: rgba(255,107,0,0.15); color: white; }
-  #notepad-text {
-    flex: 1; background: transparent; border: none; outline: none;
-    color: white; font-size: 13px; line-height: 1.7;
-    font-family: 'Courier New', monospace;
-    padding: 16px; resize: none; width: 100%;
-    caret-color: var(--fire-orange);
-  }
-
-  /* ══════════════ CALENDAR ══════════════ */
-  .cal-body { padding: 16px; }
-  .cal-header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 16px;
-  }
-  .cal-month {
-    font-size: 16px; font-weight: 700;
-    background: linear-gradient(135deg, var(--fire-orange), var(--fire-amber));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  }
-  .cal-nav {
-    background: rgba(255,255,255,0.06); border: none;
-    color: white; width: 28px; height: 28px; border-radius: 6px;
-    cursor: pointer; font-size: 14px; display: flex;
-    align-items: center; justify-content: center;
-    transition: background 0.15s;
-  }
-  .cal-nav:hover { background: rgba(255,107,0,0.25); }
-  .cal-grid {
-    display: grid; grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-  }
-  .cal-day-header {
-    text-align: center; font-size: 10px; font-weight: 700;
-    color: rgba(255,107,0,0.7); letter-spacing: 0.05em;
-    padding: 4px 0; text-transform: uppercase;
-  }
-  .cal-day {
-    aspect-ratio: 1; display: flex; align-items: center;
-    justify-content: center; border-radius: 6px;
-    font-size: 12px; cursor: pointer; transition: background 0.15s;
-    color: var(--text-dim);
-  }
-  .cal-day:hover { background: rgba(255,107,0,0.15); color: white; }
-  .cal-day.today {
-    background: var(--fire-orange); color: white; font-weight: 700;
-  }
-  .cal-day.other-month { opacity: 0.3; }
-  .cal-events { margin-top: 16px; }
-  .cal-event {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 12px; background: rgba(255,107,0,0.1);
-    border-left: 3px solid var(--fire-orange);
-    border-radius: 0 8px 8px 0; margin-bottom: 8px;
-  }
-  .cal-event .time { font-size: 11px; color: var(--fire-amber); font-weight: 600; }
-  .cal-event .title { font-size: 12px; }
-
-  /* ══════════════ NOTIFICATION ══════════════ */
-  #notif-area {
-    position: fixed; bottom: calc(var(--taskbar-h) + 12px); right: 12px;
-    display: flex; flex-direction: column; gap: 8px;
-    z-index: 9800; pointer-events: none;
-  }
-  .notif {
-    background: rgba(14,14,26,0.95);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,107,0,0.25);
-    border-radius: 12px; padding: 14px 16px;
-    display: flex; gap: 12px; align-items: flex-start;
-    width: 300px; pointer-events: all;
-    animation: notif-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-  }
-  @keyframes notif-in {
-    from { opacity: 0; transform: translateX(60px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
-  .notif-icon { font-size: 22px; }
-  .notif-content { flex: 1; }
-  .notif-title { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
-  .notif-body { font-size: 12px; color: var(--text-dim); line-height: 1.4; }
-  .notif-close {
-    background: none; border: none; color: var(--text-dim);
-    cursor: pointer; font-size: 16px; padding: 0; line-height: 1;
-  }
-  .notif-close:hover { color: white; }
-  .notif-time { font-size: 10px; color: rgba(255,107,0,0.6); margin-top: 4px; }
-
-  /* ══════════════ CONTEXT MENU ══════════════ */
-  #ctx-menu {
-    position: fixed; z-index: 9900;
-    background: rgba(14,14,26,0.97);
-    backdrop-filter: blur(30px);
-    border: 1px solid rgba(255,107,0,0.2);
-    border-radius: 10px; padding: 6px;
-    box-shadow: 0 12px 36px rgba(0,0,0,0.6);
-    min-width: 180px;
-    display: none;
-  }
-  #ctx-menu.show { display: block; }
-  .ctx-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 8px 12px; border-radius: 6px;
-    cursor: pointer; font-size: 13px;
-    color: var(--text-dim); transition: all 0.1s;
-  }
-  .ctx-item:hover { background: rgba(255,107,0,0.15); color: white; }
-  .ctx-item .ico { font-size: 15px; width: 18px; text-align: center; }
-  .ctx-divider {
-    height: 1px; background: rgba(255,255,255,0.07);
-    margin: 4px 0;
-  }
-
-  /* ══════════════ UTILS ══════════════ */
-  .gradient-icon-fire { background: linear-gradient(135deg, #FF6B00, #FF4500); }
-  .gradient-icon-blue { background: linear-gradient(135deg, #0078D4, #00A2E8); }
-  .gradient-icon-green { background: linear-gradient(135deg, #107C10, #00B04F); }
-  .gradient-icon-purple { background: linear-gradient(135deg, #744DA9, #B97AE7); }
-  .gradient-icon-amber { background: linear-gradient(135deg, #FF8C00, #FFC300); }
-  .gradient-icon-teal { background: linear-gradient(135deg, #008080, #00CED1); }
-  .gradient-icon-red { background: linear-gradient(135deg, #C42B1C, #FF4444); }
-  .gradient-icon-indigo { background: linear-gradient(135deg, #3B3DC3, #6B7FFF); }
-  .gradient-icon-pink { background: linear-gradient(135deg, #C13584, #E1306C); }
-  .gradient-icon-dark { background: linear-gradient(135deg, #2a2a40, #3a3a55); }
-</style>
+    @media (max-width: 600px) {
+      header { padding: 14px 18px; }
+      main { padding: 28px 16px 48px; }
+      .form-row { flex-direction: column; }
+    }
+  </style>
 </head>
 <body>
 
-<!-- DESKTOP -->
-<div id="desktop" oncontextmenu="showCtxMenu(event)">
-  
-  <!-- Desktop Icons -->
-  <div id="icon-grid">
-    <div class="desk-icon" ondblclick="openWindow('win-explorer')">
-      <div class="ico gradient-icon-amber">📁</div>
-      <div class="lbl">Files</div>
-    </div>
-    <div class="desk-icon" ondblclick="openWindow('win-browser')">
-      <div class="ico gradient-icon-fire">🔥</div>
-      <div class="lbl">Fire Browser</div>
-    </div>
-    <div class="desk-icon" ondblclick="openWindow('win-notepad')">
-      <div class="ico gradient-icon-dark">📝</div>
-      <div class="lbl">Notepad</div>
-    </div>
-    <div class="desk-icon" ondblclick="openWindow('win-calendar')">
-      <div class="ico gradient-icon-red">📅</div>
-      <div class="lbl">Calendar</div>
-    </div>
-    <div class="desk-icon" ondblclick="openWindow('win-settings')">
-      <div class="ico gradient-icon-indigo">⚙️</div>
-      <div class="lbl">Settings</div>
-    </div>
-    <div class="desk-icon" ondblclick="openWindow('win-store')">
-      <div class="ico gradient-icon-fire">🛒</div>
-      <div class="lbl">Fire Store</div>
-    </div>
-    <div class="desk-icon" ondblclick="showNotif('🎵','Fire Music','Now playing: Hot Summer Nights by Fire Band')">
-      <div class="ico gradient-icon-purple">🎵</div>
-      <div class="lbl">Music</div>
-    </div>
-    <div class="desk-icon" ondblclick="showNotif('📸','Camera','Accessing camera... Ready!')">
-      <div class="ico gradient-icon-teal">📸</div>
-      <div class="lbl">Camera</div>
-    </div>
-  </div>
-
-  <!-- ═══ WINDOW: FILE EXPLORER ═══ -->
-  <div class="win" id="win-explorer" style="width:640px;height:420px;top:80px;left:120px;display:none;z-index:100">
-    <div class="win-titlebar" onmousedown="startDrag(event,'win-explorer')">
-      <span class="win-icon">📁</span>
-      <span class="win-title">File Explorer</span>
-      <div class="win-controls">
-        <button class="win-btn minimize" onclick="minimizeWin('win-explorer')">─</button>
-        <button class="win-btn maximize" onclick="maximizeWin('win-explorer')">□</button>
-        <button class="win-btn close" onclick="closeWindow('win-explorer')">✕</button>
-      </div>
-    </div>
-    <div class="win-body" id="win-explorer-body">
-      <div class="explorer-toolbar">
-        <button class="explorer-navbtn">←</button>
-        <button class="explorer-navbtn">→</button>
-        <button class="explorer-navbtn">↑</button>
-        <div class="explorer-path">🏠 This Device › Documents</div>
-        <button class="explorer-navbtn">🔍</button>
-      </div>
-      <div class="explorer-body">
-        <div class="explorer-sidebar">
-          <div class="sidebar-item active"><span class="ico">🏠</span>Home</div>
-          <div class="sidebar-item"><span class="ico">🖥️</span>This Device</div>
-          <div class="sidebar-item"><span class="ico">🔥</span>Fire Drive</div>
-          <div class="sidebar-item"><span class="ico">📄</span>Documents</div>
-          <div class="sidebar-item"><span class="ico">🖼️</span>Photos</div>
-          <div class="sidebar-item"><span class="ico">🎵</span>Music</div>
-          <div class="sidebar-item"><span class="ico">🎬</span>Videos</div>
-          <div class="sidebar-item"><span class="ico">⬇️</span>Downloads</div>
-          <div class="sidebar-item"><span class="ico">🗑️</span>Recycle Bin</div>
-        </div>
-        <div class="explorer-files">
-          <div class="file-item"><span class="ico">📂</span><span class="lbl">Projects</span></div>
-          <div class="file-item"><span class="ico">📂</span><span class="lbl">Work Docs</span></div>
-          <div class="file-item"><span class="ico">📂</span><span class="lbl">Photos</span></div>
-          <div class="file-item"><span class="ico">📄</span><span class="lbl">Report.docx</span></div>
-          <div class="file-item"><span class="ico">📊</span><span class="lbl">Budget.xlsx</span></div>
-          <div class="file-item"><span class="ico">🖼️</span><span class="lbl">wallpaper.jpg</span></div>
-          <div class="file-item"><span class="ico">🎵</span><span class="lbl">playlist.mp3</span></div>
-          <div class="file-item"><span class="ico">📝</span><span class="lbl">notes.txt</span></div>
-          <div class="file-item"><span class="ico">🗜️</span><span class="lbl">archive.zip</span></div>
-          <div class="file-item"><span class="ico">📑</span><span class="lbl">Resume.pdf</span></div>
-          <div class="file-item"><span class="ico">📂</span><span class="lbl">Downloads</span></div>
-          <div class="file-item"><span class="ico">🎬</span><span class="lbl">video.mp4</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══ WINDOW: BROWSER ═══ -->
-  <div class="win" id="win-browser" style="width:680px;height:460px;top:60px;left:200px;display:none;z-index:100">
-    <div class="win-titlebar" onmousedown="startDrag(event,'win-browser')">
-      <span class="win-icon">🔥</span>
-      <span class="win-title">Fire Browser — New Tab</span>
-      <div class="win-controls">
-        <button class="win-btn minimize" onclick="minimizeWin('win-browser')">─</button>
-        <button class="win-btn maximize" onclick="maximizeWin('win-browser')">□</button>
-        <button class="win-btn close" onclick="closeWindow('win-browser')">✕</button>
-      </div>
-    </div>
-    <div class="win-body" style="display:flex;flex-direction:column">
-      <div class="browser-bar">
-        <button class="browser-navbtn">←</button>
-        <button class="browser-navbtn">→</button>
-        <button class="browser-navbtn">↺</button>
-        <input class="browser-url" value="fire://newtab" spellcheck="false">
-        <button class="browser-navbtn">⭐</button>
-        <button class="browser-navbtn">⋯</button>
-      </div>
-      <div class="browser-content">
-        <div class="browser-logo">🔥</div>
-        <div class="browser-tagline">Fire Browser</div>
-        <div style="font-size:12px;color:var(--text-dim);margin-top:-8px">Blazing fast. Always on fire.</div>
-        <div class="browser-quick-links">
-          <div class="quick-link"><span class="ico">🛒</span><span class="lbl">Amazon</span></div>
-          <div class="quick-link"><span class="ico">📺</span><span class="lbl">Prime Video</span></div>
-          <div class="quick-link"><span class="ico">🎵</span><span class="lbl">Fire Music</span></div>
-          <div class="quick-link"><span class="ico">📰</span><span class="lbl">Fire News</span></div>
-          <div class="quick-link"><span class="ico">📚</span><span class="lbl">Kindle</span></div>
-          <div class="quick-link"><span class="ico">🌤️</span><span class="lbl">Weather</span></div>
-          <div class="quick-link"><span class="ico">🗺️</span><span class="lbl">Maps</span></div>
-          <div class="quick-link"><span class="ico">⚙️</span><span class="lbl">Settings</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══ WINDOW: NOTEPAD ═══ -->
-  <div class="win" id="win-notepad" style="width:480px;height:360px;top:140px;left:300px;display:none;z-index:100">
-    <div class="win-titlebar" onmousedown="startDrag(event,'win-notepad')">
-      <span class="win-icon">📝</span>
-      <span class="win-title">Notepad — Untitled</span>
-      <div class="win-controls">
-        <button class="win-btn minimize" onclick="minimizeWin('win-notepad')">─</button>
-        <button class="win-btn maximize" onclick="maximizeWin('win-notepad')">□</button>
-        <button class="win-btn close" onclick="closeWindow('win-notepad')">✕</button>
-      </div>
-    </div>
-    <div class="win-body" style="display:flex;flex-direction:column">
-      <div class="notepad-toolbar">
-        <div class="notepad-menu">File</div>
-        <div class="notepad-menu">Edit</div>
-        <div class="notepad-menu">View</div>
-        <div class="notepad-menu">Format</div>
-      </div>
-      <textarea id="notepad-text" placeholder="Start typing...">🔥 FireOS Desktop Notes
-
-Welcome to FireOS — the blazing fast hybrid of Windows and Amazon Fire!
-
-✅ Drag windows around the screen
-✅ Double-click desktop icons to open apps  
-✅ Right-click desktop for context menu
-✅ Click the 🔥 Start button on taskbar
-✅ Windows can be resized from the bottom-right corner
-
-Built for speed. Built for fire. 🔥
-</textarea>
-    </div>
-  </div>
-
-  <!-- ═══ WINDOW: CALENDAR ═══ -->
-  <div class="win" id="win-calendar" style="width:380px;height:480px;top:100px;left:400px;display:none;z-index:100">
-    <div class="win-titlebar" onmousedown="startDrag(event,'win-calendar')">
-      <span class="win-icon">📅</span>
-      <span class="win-title">Calendar</span>
-      <div class="win-controls">
-        <button class="win-btn minimize" onclick="minimizeWin('win-calendar')">─</button>
-        <button class="win-btn maximize" onclick="maximizeWin('win-calendar')">□</button>
-        <button class="win-btn close" onclick="closeWindow('win-calendar')">✕</button>
-      </div>
-    </div>
-    <div class="win-body">
-      <div class="cal-body" id="cal-body"></div>
-    </div>
-  </div>
-
-  <!-- ═══ WINDOW: SETTINGS ═══ -->
-  <div class="win" id="win-settings" style="width:620px;height:440px;top:90px;left:160px;display:none;z-index:100">
-    <div class="win-titlebar" onmousedown="startDrag(event,'win-settings')">
-      <span class="win-icon">⚙️</span>
-      <span class="win-title">Settings</span>
-      <div class="win-controls">
-        <button class="win-btn minimize" onclick="minimizeWin('win-settings')">─</button>
-        <button class="win-btn maximize" onclick="maximizeWin('win-settings')">□</button>
-        <button class="win-btn close" onclick="closeWindow('win-settings')">✕</button>
-      </div>
-    </div>
-    <div class="win-body">
-      <div class="settings-body">
-        <div class="settings-nav">
-          <div class="settings-nav-item active"><span>🏠</span>System</div>
-          <div class="settings-nav-item"><span>🎨</span>Personalization</div>
-          <div class="settings-nav-item"><span>📶</span>Network</div>
-          <div class="settings-nav-item"><span>🔋</span>Battery</div>
-          <div class="settings-nav-item"><span>🔒</span>Privacy</div>
-          <div class="settings-nav-item"><span>🔥</span>Fire Services</div>
-          <div class="settings-nav-item"><span>🔔</span>Notifications</div>
-          <div class="settings-nav-item"><span>ℹ️</span>About</div>
-        </div>
-        <div class="settings-content">
-          <div class="settings-section-title">System Settings</div>
-          <div class="settings-card">
-            <div class="settings-row">
-              <span class="ico">🌙</span>
-              <div class="info"><div class="name">Dark Mode</div><div class="sub">Always fire in the dark</div></div>
-              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            </div>
-            <div class="settings-row">
-              <span class="ico">🔔</span>
-              <div class="info"><div class="name">Notifications</div><div class="sub">Show alerts and banners</div></div>
-              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            </div>
-            <div class="settings-row">
-              <span class="ico">🔥</span>
-              <div class="info"><div class="name">Fire Sync</div><div class="sub">Sync with Amazon Fire cloud</div></div>
-              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            </div>
-            <div class="settings-row">
-              <span class="ico">🔊</span>
-              <div class="info"><div class="name">System Sounds</div><div class="sub">Play UI sound effects</div></div>
-              <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
-            </div>
-            <div class="settings-row">
-              <span class="ico">📍</span>
-              <div class="info"><div class="name">Location Services</div><div class="sub">Allow apps to use your location</div></div>
-              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            </div>
-          </div>
-          <div class="settings-card">
-            <div class="settings-row">
-              <span class="ico">🖥️</span>
-              <div class="info"><div class="name">Display Resolution</div><div class="sub">1920 × 1080 @ 60Hz</div></div>
-              <span style="font-size:12px;color:var(--text-dim)">Change ›</span>
-            </div>
-            <div class="settings-row">
-              <span class="ico">⚡</span>
-              <div class="info"><div class="name">Performance Mode</div><div class="sub">Fire Boost™ Active</div></div>
-              <span style="font-size:12px;color:var(--fire-orange)">ON</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══ WINDOW: FIRE STORE ═══ -->
-  <div class="win" id="win-store" style="width:580px;height:430px;top:100px;left:180px;display:none;z-index:100">
-    <div class="win-titlebar" onmousedown="startDrag(event,'win-store')">
-      <span class="win-icon">🛒</span>
-      <span class="win-title">Fire Store</span>
-      <div class="win-controls">
-        <button class="win-btn minimize" onclick="minimizeWin('win-store')">─</button>
-        <button class="win-btn maximize" onclick="maximizeWin('win-store')">□</button>
-        <button class="win-btn close" onclick="closeWindow('win-store')">✕</button>
-      </div>
-    </div>
-    <div class="win-body" style="padding:16px;overflow-y:auto">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
-        <input style="flex:1;background:rgba(255,255,255,0.07);border:1px solid rgba(255,107,0,0.2);border-radius:20px;padding:8px 16px;color:white;font-size:13px;outline:none;font-family:inherit" placeholder="🔍  Search apps, games, media...">
-        <button style="background:linear-gradient(135deg,#FF6B00,#FF4500);border:none;color:white;padding:8px 16px;border-radius:20px;font-size:13px;cursor:pointer;font-weight:600">Search</button>
-      </div>
-      <div style="font-size:11px;font-weight:700;color:rgba(255,107,0,0.8);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px">Featured Apps</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
-        ${[
-          ['🎮','Fire Games','Gaming Hub','Free'],
-          ['📺','Prime Video','Streaming','Free'],
-          ['📚','Kindle','E-Books','Free'],
-          ['🎵','Amazon Music','Music','$9.99/mo'],
-          ['🛒','Amazon Shopping','Shop','Free'],
-          ['🌐','Silk Browser','Browser','Free'],
-          ['🏋️','Alexa Fitness','Health','Free'],
-          ['🗣️','Alexa','Voice AI','Free'],
-          ['📰','Fire News','News','Free'],
-        ].map(([ico,name,cat,price])=>`
-          <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:12px;cursor:pointer;transition:all 0.15s" onmouseover="this.style.borderColor='rgba(255,107,0,0.35)';this.style.background='rgba(255,107,0,0.08)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)';this.style.background='rgba(255,255,255,0.04)'">
-            <div style="font-size:28px;margin-bottom:6px">${ico}</div>
-            <div style="font-size:13px;font-weight:600;margin-bottom:2px">${name}</div>
-            <div style="font-size:10px;color:var(--text-dim)">${cat}</div>
-            <div style="font-size:11px;color:var(--fire-amber);margin-top:6px;font-weight:600">${price}</div>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  </div>
-
-</div><!-- end desktop -->
-
-<!-- TASKBAR -->
-<div id="taskbar">
-  <button id="start-btn" onclick="toggleStartMenu()" title="Start">
-    <svg viewBox="0 0 22 22" fill="none">
-      <rect x="1" y="1" width="9" height="9" rx="1.5" fill="#FF6B00"/>
-      <rect x="12" y="1" width="9" height="9" rx="1.5" fill="#FF9500"/>
-      <rect x="1" y="12" width="9" height="9" rx="1.5" fill="#FF4500"/>
-      <rect x="12" y="12" width="9" height="9" rx="1.5" fill="#FF6B00"/>
-    </svg>
-  </button>
-
-  <div id="search-bar">
-    <span>🔍</span>
-    <span>Search FireOS…</span>
-  </div>
-
-  <div id="taskbar-apps">
-    <div class="tb-app" ondblclick="openWindow('win-explorer')" id="tb-explorer">
-      <span class="ico">📁</span><span>Files</span>
-    </div>
-    <div class="tb-app" ondblclick="openWindow('win-browser')" id="tb-browser">
-      <span class="ico">🔥</span><span>Browser</span>
-    </div>
-    <div class="tb-app" ondblclick="openWindow('win-notepad')" id="tb-notepad">
-      <span class="ico">📝</span><span>Notepad</span>
-    </div>
-    <div class="tb-app" ondblclick="openWindow('win-store')" id="tb-store">
-      <span class="ico">🛒</span><span>Store</span>
-    </div>
-  </div>
-
-  <div id="systray">
-    <div class="tray-icon" title="Wi-Fi">📶</div>
-    <div class="tray-icon" title="Volume">🔊</div>
-    <div class="tray-icon" title="Battery">🔋</div>
-    <div class="tray-icon" title="Fire Sync" style="color:var(--fire-orange)">🔥</div>
-    <div id="clock">
-      <div id="clock-time">00:00</div>
-      <div id="clock-date">Loading…</div>
-    </div>
-  </div>
+<div class="bg-orbs">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
 </div>
 
-<!-- START MENU -->
-<div id="start-menu">
-  <input class="start-search" id="start-search" placeholder="🔍  Search apps and settings…">
+<div class="app">
 
-  <div class="sm-section-title">Pinned Apps</div>
-  <div class="sm-apps">
-    <div class="sm-app" onclick="openWindow('win-browser');toggleStartMenu()">
-      <div class="ico gradient-icon-fire">🔥</div><div class="lbl">Browser</div>
+  <!-- HEADER -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">📌</div>
+      <span class="logo-text">Pyro<span>Scroll</span></span>
     </div>
-    <div class="sm-app" onclick="openWindow('win-explorer');toggleStartMenu()">
-      <div class="ico gradient-icon-amber">📁</div><div class="lbl">Files</div>
+    <div class="header-right">
+      <div class="user-chip" id="userChip">
+        <img id="userAvatar" src="" alt=""/>
+        <span id="userName"></span>
+      </div>
+      <button class="btn-signout" id="btnSignOut" style="display:none" onclick="signOut()">Sign out</button>
+      <button class="btn-google" id="btnLogin" onclick="signInWithGoogle()">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17.64 9.2045c0-.638-.0573-1.2518-.1636-1.8409H9v3.4814h4.8436c-.2086 1.125-.8427 2.0782-1.7959 2.7164v2.2581h2.9086c1.7018-1.5668 2.6836-3.874 2.6836-6.615z" fill="#4285F4"/>
+          <path d="M9 18c2.43 0 4.4673-.8059 5.9564-2.1805l-2.9087-2.2581c-.8059.54-1.8368.8591-3.0477.8591-2.3445 0-4.3282-1.5836-5.036-3.7105H.9574v2.3318C2.4382 15.9832 5.4818 18 9 18z" fill="#34A853"/>
+          <path d="M3.964 10.71C3.7845 10.17 3.6818 9.5945 3.6818 9s.1027-1.17.2822-1.71V4.9582H.9573A8.9961 8.9961 0 000 9c0 1.4523.3477 2.8268.9573 4.0418L3.964 10.71z" fill="#FBBC05"/>
+          <path d="M9 3.5795c1.3214 0 2.5077.4541 3.4405 1.346l2.5813-2.5814C13.4627.8918 11.4259 0 9 0 5.4818 0 2.4382 2.0168.9573 4.9582L3.964 7.29C4.6718 5.1632 6.6555 3.5795 9 3.5795z" fill="#EA4335"/>
+        </svg>
+        Sign in with Google
+      </button>
     </div>
-    <div class="sm-app" onclick="openWindow('win-settings');toggleStartMenu()">
-      <div class="ico gradient-icon-indigo">⚙️</div><div class="lbl">Settings</div>
-    </div>
-    <div class="sm-app" onclick="openWindow('win-notepad');toggleStartMenu()">
-      <div class="ico gradient-icon-dark">📝</div><div class="lbl">Notepad</div>
-    </div>
-    <div class="sm-app" onclick="openWindow('win-store');toggleStartMenu()">
-      <div class="ico gradient-icon-fire">🛒</div><div class="lbl">Store</div>
-    </div>
-    <div class="sm-app" onclick="openWindow('win-calendar');toggleStartMenu()">
-      <div class="ico gradient-icon-red">📅</div><div class="lbl">Calendar</div>
-    </div>
-    <div class="sm-app" onclick="showNotif('🎵','Music Player','Opening your library...');toggleStartMenu()">
-      <div class="ico gradient-icon-purple">🎵</div><div class="lbl">Music</div>
-    </div>
-    <div class="sm-app" onclick="showNotif('📺','Prime Video','Loading your watchlist...');toggleStartMenu()">
-      <div class="ico gradient-icon-blue">📺</div><div class="lbl">Video</div>
-    </div>
-    <div class="sm-app" onclick="showNotif('📚','Kindle','Opening your library...');toggleStartMenu()">
-      <div class="ico gradient-icon-green">📚</div><div class="lbl">Kindle</div>
-    </div>
-    <div class="sm-app" onclick="showNotif('🗣️','Alexa','Hey! How can I help you today?');toggleStartMenu()">
-      <div class="ico gradient-icon-teal">🗣️</div><div class="lbl">Alexa</div>
-    </div>
-    <div class="sm-app" onclick="showNotif('📸','Camera','Camera ready!');toggleStartMenu()">
-      <div class="ico gradient-icon-amber">📸</div><div class="lbl">Camera</div>
-    </div>
-    <div class="sm-app" onclick="showNotif('🌤️','Weather','Partly cloudy, 18°C. Feels like 15°C.');toggleStartMenu()">
-      <div class="ico gradient-icon-blue">🌤️</div><div class="lbl">Weather</div>
-    </div>
-  </div>
+  </header>
 
-  <div class="sm-section-title">Recent</div>
-  <div class="sm-recents">
-    <div class="sm-recent"><span class="ico">📄</span><div class="info"><div class="name">Budget_Q4.xlsx</div><div class="sub">Today at 2:31 PM</div></div></div>
-    <div class="sm-recent"><span class="ico">📝</span><div class="info"><div class="name">Project Notes.txt</div><div class="sub">Yesterday at 11:14 AM</div></div></div>
-    <div class="sm-recent"><span class="ico">🖼️</span><div class="info"><div class="name">Screenshot_0319.png</div><div class="sub">2 days ago</div></div></div>
-  </div>
+  <!-- MAIN -->
+  <main>
+    <h1 class="page-title">Announcement Board</h1>
+    <p class="page-sub" id="pageSubText">Stay up to date with school news &amp; events.</p>
 
-  <div class="sm-footer">
-    <div class="sm-user">
-      <div class="sm-avatar">F</div>
-      <span class="sm-username">Fire User</span>
+    <!-- Login prompt (shown when logged out) -->
+    <div class="login-prompt" id="loginPrompt">
+      <div class="lp-text"><strong>Sign in</strong> to post announcements to your school community.</div>
+      <button class="btn-google" onclick="signInWithGoogle()">
+        <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M17.64 9.2045c0-.638-.0573-1.2518-.1636-1.8409H9v3.4814h4.8436c-.2086 1.125-.8427 2.0782-1.7959 2.7164v2.2581h2.9086c1.7018-1.5668 2.6836-3.874 2.6836-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.4673-.8059 5.9564-2.1805l-2.9087-2.2581c-.8059.54-1.8368.8591-3.0477.8591-2.3445 0-4.3282-1.5836-5.036-3.7105H.9574v2.3318C2.4382 15.9832 5.4818 18 9 18z" fill="#34A853"/><path d="M3.964 10.71C3.7845 10.17 3.6818 9.5945 3.6818 9s.1027-1.17.2822-1.71V4.9582H.9573A8.9961 8.9961 0 000 9c0 1.4523.3477 2.8268.9573 4.0418L3.964 10.71z" fill="#FBBC05"/><path d="M9 3.5795c1.3214 0 2.5077.4541 3.4405 1.346l2.5813-2.5814C13.4627.8918 11.4259 0 9 0 5.4818 0 2.4382 2.0168.9573 4.9582L3.964 7.29C4.6718 5.1632 6.6555 3.5795 9 3.5795z" fill="#EA4335"/></svg>
+        Sign in
+      </button>
     </div>
-    <div class="sm-power-btns">
-      <button class="sm-power-btn" title="Lock" onclick="showNotif('🔒','FireOS','Screen locked!')">🔒</button>
-      <button class="sm-power-btn" title="Restart" onclick="showNotif('🔄','FireOS','Restarting... Just kidding 😄')">🔄</button>
-      <button class="sm-power-btn" title="Shutdown" onclick="showNotif('⏻','FireOS','Shutting down... Just kidding! 🔥')">⏻</button>
+
+    <!-- New Post Button (shown when logged in) -->
+    <button class="btn-new-post" id="btnNewPost" onclick="toggleForm()">
+      <span id="newPostBtnIcon">＋</span>
+      <span id="newPostBtnText">New Announcement</span>
+    </button>
+
+    <!-- Post Form -->
+    <div class="post-form-wrap" id="postFormWrap">
+      <div class="glass-card">
+        <div class="form-row">
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Title</label>
+            <input class="form-input" id="fTitle" type="text" placeholder="Announcement title…" maxlength="100"/>
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Category</label>
+            <select class="form-select" id="fCategory">
+              <option value="general">General</option>
+              <option value="event">Event</option>
+              <option value="academic">Academic</option>
+              <option value="urgent">Urgent</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top:16px">
+          <label class="form-label">Message</label>
+          <textarea class="form-textarea" id="fBody" placeholder="Write your announcement here…" maxlength="800"></textarea>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center">
+          <button class="btn-post" onclick="postAnnouncement()">📢 Post Announcement</button>
+          <button class="btn-signout" onclick="toggleForm()" style="border-color:var(--glass-border); color:var(--text-dim)">Cancel</button>
+        </div>
+      </div>
     </div>
-  </div>
+
+    <!-- Filters -->
+    <div class="filters">
+      <button class="filter-btn active" onclick="filterAnn('all', this)">All</button>
+      <button class="filter-btn" onclick="filterAnn('general', this)">General</button>
+      <button class="filter-btn" onclick="filterAnn('event', this)">Events</button>
+      <button class="filter-btn" onclick="filterAnn('academic', this)">Academic</button>
+      <button class="filter-btn" onclick="filterAnn('urgent', this)">Urgent</button>
+    </div>
+
+    <!-- Announcements List -->
+    <div class="announcements" id="annList"></div>
+
+    <div class="empty-state" id="emptyState" style="display:none">
+      <div class="es-icon">📭</div>
+      <p>No announcements yet. Be the first to post!</p>
+    </div>
+  </main>
 </div>
 
-<!-- CONTEXT MENU -->
-<div id="ctx-menu">
-  <div class="ctx-item" onclick="showNotif('🖼️','Wallpaper','Wallpaper options coming soon!');hideCtxMenu()"><span class="ico">🖼️</span>Change Wallpaper</div>
-  <div class="ctx-item" onclick="openWindow('win-settings');hideCtxMenu()"><span class="ico">⚙️</span>Display Settings</div>
-  <div class="ctx-divider"></div>
-  <div class="ctx-item" onclick="showNotif('🔃','Desktop','Desktop refreshed!');hideCtxMenu()"><span class="ico">🔃</span>Refresh</div>
-  <div class="ctx-item" onclick="hideCtxMenu()"><span class="ico">📋</span>Paste</div>
-  <div class="ctx-divider"></div>
-  <div class="ctx-item" onclick="openWindow('win-settings');hideCtxMenu()"><span class="ico">🔥</span>Fire Settings</div>
-  <div class="ctx-item" onclick="showNotif('ℹ️','FireOS 1.0','Version 1.0.0 — Built with 🔥');hideCtxMenu()"><span class="ico">ℹ️</span>About FireOS</div>
-</div>
+<div class="toast" id="toast"></div>
 
-<!-- NOTIFICATION AREA -->
-<div id="notif-area"></div>
+<!-- Firebase SDKs -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, onSnapshot, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-<script>
-// ══════════════════════════════════════════
-// CLOCK
-// ══════════════════════════════════════════
-function updateClock() {
-  const now = new Date();
-  const t = now.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
-  const d = now.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
-  document.getElementById('clock-time').textContent = t;
-  document.getElementById('clock-date').textContent = d;
-}
-updateClock();
-setInterval(updateClock, 10000);
+  const firebaseConfig = {
+    apiKey: "AIzaSyBsFs1qrmojBkuwIynMrFUYmt5NovALDoo",
+    authDomain: "pyro-scroll.firebaseapp.com",
+    projectId: "pyro-scroll",
+    storageBucket: "pyro-scroll.firebasestorage.app",
+    messagingSenderId: "422391668810",
+    appId: "1:422391668810:web:847b8f56e3aedc8430c6b3",
+    measurementId: "G-TW76D61P81"
+  };
 
-// ══════════════════════════════════════════
-// CALENDAR
-// ══════════════════════════════════════════
-let calDate = new Date();
-function renderCalendar() {
-  const el = document.getElementById('cal-body');
-  if(!el) return;
-  const now = new Date();
-  const y = calDate.getFullYear(), m = calDate.getMonth();
-  const monthName = calDate.toLocaleDateString('en-US',{month:'long',year:'numeric'});
-  const firstDay = new Date(y,m,1).getDay();
-  const daysInMonth = new Date(y,m+1,0).getDate();
-  const days = ['Su','Mo','Tu','We','Th','Fr','Sa'];
-  let cells = '';
-  for(let i=0;i<firstDay;i++) {
-    const d = new Date(y,m,0).getDate()-firstDay+i+1;
-    cells += `<div class="cal-day other-month">${d}</div>`;
-  }
-  for(let d=1;d<=daysInMonth;d++){
-    const isToday = d===now.getDate()&&m===now.getMonth()&&y===now.getFullYear();
-    cells += `<div class="cal-day${isToday?' today':''}">${d}</div>`;
-  }
-  el.innerHTML = `
-    <div class="cal-header">
-      <button class="cal-nav" onclick="calDate.setMonth(calDate.getMonth()-1);renderCalendar()">‹</button>
-      <div class="cal-month">${monthName}</div>
-      <button class="cal-nav" onclick="calDate.setMonth(calDate.getMonth()+1);renderCalendar()">›</button>
-    </div>
-    <div class="cal-grid">
-      ${days.map(d=>`<div class="cal-day-header">${d}</div>`).join('')}
-      ${cells}
-    </div>
-    <div class="cal-events">
-      <div style="font-size:11px;font-weight:700;color:rgba(255,107,0,0.8);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">Today's Events</div>
-      <div class="cal-event"><div><div class="time">9:00 AM</div><div class="title">Team Standup</div></div></div>
-      <div class="cal-event"><div><div class="time">2:30 PM</div><div class="title">Product Review</div></div></div>
-      <div class="cal-event"><div><div class="time">5:00 PM</div><div class="title">Fire OS Update</div></div></div>
-    </div>
-  `;
-}
-renderCalendar();
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const provider = new GoogleAuthProvider();
 
-// ══════════════════════════════════════════
-// START MENU
-// ══════════════════════════════════════════
-let startOpen = false;
-function toggleStartMenu() {
-  startOpen = !startOpen;
-  document.getElementById('start-menu').classList.toggle('open', startOpen);
-  document.getElementById('start-btn').classList.toggle('active', startOpen);
-}
-document.addEventListener('click', (e) => {
-  if(startOpen && !e.target.closest('#start-menu') && !e.target.closest('#start-btn')) {
-    startOpen = false;
-    document.getElementById('start-menu').classList.remove('open');
-    document.getElementById('start-btn').classList.remove('active');
-  }
-  if(!e.target.closest('#ctx-menu')) hideCtxMenu();
-});
+  let currentUser = null;
+  let currentFilter = 'all';
 
-// ══════════════════════════════════════════
-// WINDOWS
-// ══════════════════════════════════════════
-let zTop = 200;
-const wins = {};
+  // ── AUTH ──
+  window.signInWithGoogle = async () => {
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (e) {
+      showToast("Sign-in failed: " + e.message);
+    }
+  };
 
-function openWindow(id) {
-  const el = document.getElementById(id);
-  if(!el) return;
-  el.style.display = 'flex';
-  bringToFront(id);
-  wins[id] = wins[id] || { open: true };
-  wins[id].open = true;
-  updateTaskbar();
-}
+  window.signOut = async () => {
+    await fbSignOut(auth);
+    showToast("Signed out.");
+  };
 
-function closeWindow(id) {
-  const el = document.getElementById(id);
-  if(el) el.style.display = 'none';
-  if(wins[id]) wins[id].open = false;
-  updateTaskbar();
-}
+  onAuthStateChanged(auth, user => {
+    currentUser = user;
+    const chip = document.getElementById('userChip');
+    const avatar = document.getElementById('userAvatar');
+    const nameEl = document.getElementById('userName');
+    const btnLogin = document.getElementById('btnLogin');
+    const btnSignOut = document.getElementById('btnSignOut');
+    const loginPrompt = document.getElementById('loginPrompt');
+    const btnNewPost = document.getElementById('btnNewPost');
+    const postFormWrap = document.getElementById('postFormWrap');
+    const subText = document.getElementById('pageSubText');
 
-function minimizeWin(id) {
-  const el = document.getElementById(id);
-  if(el) el.style.display = 'none';
-  if(wins[id]) wins[id].open = false;
-  updateTaskbar();
-}
+    if (user) {
+      chip.classList.add('visible');
+      avatar.src = user.photoURL || '';
+      nameEl.textContent = user.displayName?.split(' ')[0] || 'User';
+      btnLogin.style.display = 'none';
+      btnSignOut.style.display = 'block';
+      loginPrompt.style.display = 'none';
+      btnNewPost.classList.add('visible');
+      subText.textContent = `Welcome back, ${user.displayName?.split(' ')[0]}! You can post announcements.`;
+    } else {
+      chip.classList.remove('visible');
+      btnLogin.style.display = 'flex';
+      btnSignOut.style.display = 'none';
+      loginPrompt.style.display = 'flex';
+      btnNewPost.classList.remove('visible');
+      postFormWrap.classList.remove('visible');
+      subText.textContent = 'Stay up to date with school news & events.';
+    }
+  });
 
-function maximizeWin(id) {
-  const el = document.getElementById(id);
-  if(!el) return;
-  if(el.dataset.maximized === '1') {
-    el.style.width = el.dataset.pw;
-    el.style.height = el.dataset.ph;
-    el.style.left = el.dataset.pl;
-    el.style.top = el.dataset.pt;
-    el.dataset.maximized = '0';
-  } else {
-    el.dataset.pw = el.style.width;
-    el.dataset.ph = el.style.height;
-    el.dataset.pl = el.style.left;
-    el.dataset.pt = el.style.top;
-    el.style.left = '0'; el.style.top = '0';
-    el.style.width = '100%';
-    el.style.height = 'calc(100vh - 48px)';
-    el.dataset.maximized = '1';
-  }
-}
+  // ── FORM TOGGLE ──
+  window.toggleForm = () => {
+    const wrap = document.getElementById('postFormWrap');
+    const btnText = document.getElementById('newPostBtnText');
+    const btnIcon = document.getElementById('newPostBtnIcon');
+    const open = wrap.classList.toggle('visible');
+    btnText.textContent = open ? 'Cancel' : 'New Announcement';
+    btnIcon.textContent = open ? '✕' : '＋';
+    if (open) wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  };
 
-function bringToFront(id) {
-  zTop++;
-  document.getElementById(id).style.zIndex = zTop;
-  document.querySelectorAll('.win').forEach(w => w.classList.remove('focused'));
-  document.getElementById(id).classList.add('focused');
-}
+  // ── POST ──
+  window.postAnnouncement = async () => {
+    if (!currentUser) { showToast("Please sign in first."); return; }
+    const title = document.getElementById('fTitle').value.trim();
+    const body = document.getElementById('fBody').value.trim();
+    const category = document.getElementById('fCategory').value;
+    if (!title || !body) { showToast("Please fill in title and message."); return; }
 
-function updateTaskbar() {}
+    try {
+      await addDoc(collection(db, "announcements"), {
+        title, body, category,
+        authorName: currentUser.displayName || 'Anonymous',
+        authorPhoto: currentUser.photoURL || '',
+        authorId: currentUser.uid,
+        createdAt: serverTimestamp()
+      });
+      document.getElementById('fTitle').value = '';
+      document.getElementById('fBody').value = '';
+      document.getElementById('fCategory').value = 'general';
+      window.toggleForm();
+      showToast("📢 Announcement posted!");
+    } catch (e) {
+      showToast("Error posting: " + e.message);
+    }
+  };
 
-// Window click to focus
-document.querySelectorAll('.win').forEach(w => {
-  w.addEventListener('mousedown', () => bringToFront(w.id));
-});
+  // ── DELETE ──
+  window.deleteAnnouncement = async (id, authorId) => {
+    if (!currentUser || currentUser.uid !== authorId) {
+      showToast("You can only delete your own posts."); return;
+    }
+    if (!confirm("Delete this announcement?")) return;
+    await deleteDoc(doc(db, "announcements", id));
+    showToast("Announcement deleted.");
+  };
 
-// ══════════════════════════════════════════
-// DRAG
-// ══════════════════════════════════════════
-let dragging = null, dragOffX = 0, dragOffY = 0;
+  // ── FILTER ──
+  window.filterAnn = (cat, btn) => {
+    currentFilter = cat;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderFiltered();
+  };
 
-function startDrag(e, id) {
-  if(e.target.classList.contains('win-btn')) return;
-  dragging = id;
-  const el = document.getElementById(id);
-  const rect = el.getBoundingClientRect();
-  dragOffX = e.clientX - rect.left;
-  dragOffY = e.clientY - rect.top;
-  bringToFront(id);
-  e.preventDefault();
-}
+  let allAnnouncements = [];
+  const renderFiltered = () => {
+    const list = currentFilter === 'all'
+      ? allAnnouncements
+      : allAnnouncements.filter(a => a.category === currentFilter);
+    renderList(list);
+  };
 
-document.addEventListener('mousemove', (e) => {
-  if(!dragging) return;
-  const el = document.getElementById(dragging);
-  const deskH = window.innerHeight - 48;
-  let x = e.clientX - dragOffX;
-  let y = e.clientY - dragOffY;
-  x = Math.max(0, Math.min(x, window.innerWidth - el.offsetWidth));
-  y = Math.max(0, Math.min(y, deskH - el.offsetHeight));
-  el.style.left = x + 'px';
-  el.style.top = y + 'px';
-});
+  const renderList = (items) => {
+    const container = document.getElementById('annList');
+    const empty = document.getElementById('emptyState');
+    container.innerHTML = '';
+    if (!items.length) { empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    items.forEach((ann, i) => {
+      const card = document.createElement('div');
+      card.className = 'ann-card';
+      card.dataset.cat = ann.category;
+      card.style.animationDelay = `${i * 0.05}s`;
 
-document.addEventListener('mouseup', () => { dragging = null; });
+      const date = ann.createdAt?.toDate
+        ? ann.createdAt.toDate().toLocaleDateString('en-IE', { day:'numeric', month:'short', year:'numeric' })
+        : 'Just now';
 
-// ══════════════════════════════════════════
-// NOTIFICATIONS
-// ══════════════════════════════════════════
-let notifCount = 0;
-function showNotif(icon, title, body) {
-  const area = document.getElementById('notif-area');
-  const id = 'notif-' + (++notifCount);
-  const time = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
-  const el = document.createElement('div');
-  el.className = 'notif'; el.id = id;
-  el.innerHTML = `
-    <div class="notif-icon">${icon}</div>
-    <div class="notif-content">
-      <div class="notif-title">${title}</div>
-      <div class="notif-body">${body}</div>
-      <div class="notif-time">${time}</div>
-    </div>
-    <button class="notif-close" onclick="dismissNotif('${id}')">✕</button>
-  `;
-  area.appendChild(el);
-  setTimeout(() => dismissNotif(id), 5000);
-}
+      const isOwner = currentUser && currentUser.uid === ann.authorId;
+      const deleteBtn = isOwner
+        ? `<button class="ann-delete" onclick="deleteAnnouncement('${ann.id}','${ann.authorId}')">✕ Delete</button>`
+        : '';
 
-function dismissNotif(id) {
-  const el = document.getElementById(id);
-  if(el) {
-    el.style.opacity = '0';
-    el.style.transform = 'translateX(60px)';
-    el.style.transition = 'all 0.3s ease';
-    setTimeout(() => el.remove(), 300);
-  }
-}
+      const photo = ann.authorPhoto
+        ? `<img src="${ann.authorPhoto}" alt="${ann.authorName}"/>`
+        : '';
 
-// ══════════════════════════════════════════
-// CONTEXT MENU
-// ══════════════════════════════════════════
-function showCtxMenu(e) {
-  e.preventDefault();
-  const m = document.getElementById('ctx-menu');
-  m.style.left = Math.min(e.clientX, window.innerWidth - 200) + 'px';
-  m.style.top = Math.min(e.clientY, window.innerHeight - 240) + 'px';
-  m.classList.add('show');
-}
-function hideCtxMenu() {
-  document.getElementById('ctx-menu').classList.remove('show');
-}
+      card.innerHTML = `
+        <div class="ann-top">
+          <span class="ann-title">${escHtml(ann.title)}</span>
+          <span class="ann-tag tag-${ann.category}">${ann.category}</span>
+        </div>
+        <p class="ann-body">${escHtml(ann.body)}</p>
+        <div class="ann-meta">
+          <span class="ann-meta-author">${photo}${escHtml(ann.authorName)}</span>
+          <span>·</span>
+          <span>${date}</span>
+          ${deleteBtn}
+        </div>`;
+      container.appendChild(card);
+    });
+  };
 
-// ══════════════════════════════════════════
-// WELCOME NOTIFICATION
-// ══════════════════════════════════════════
-setTimeout(() => showNotif('🔥','Welcome to FireOS!','Double-click icons or try the Start menu to get going 🚀'), 800);
-setTimeout(() => showNotif('📶','Connected','Fire Network — Blazing fast connection established.'), 2400);
+  // ── REALTIME LISTENER ──
+  const q = query(collection(db, "announcements"), orderBy("createdAt", "desc"));
+  onSnapshot(q, snap => {
+    allAnnouncements = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderFiltered();
+  });
+
+  // ── HELPERS ──
+  window.showToast = (msg) => {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  };
+
+  const escHtml = str =>
+    str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 </script>
 </body>
 </html>
