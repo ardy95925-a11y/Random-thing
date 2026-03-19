@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PyroScroll — School Announcements</title>
+
+  <!--
+    SVG favicon: flame tip fusing into a scroll body.
+    Pyro (flame) + Scroll (document) — matches the site logo exactly.
+    Gold-to-teal gradient reads clearly at 16×16.
+  -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='40' y2='40' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%23E8C27A'/%3E%3Cstop offset='1' stop-color='%236DD5C4'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M20 3C17 7 14.5 11 14.5 14C14.5 17.2 17 19.2 20 19.2C23 19.2 25.5 17.2 25.5 14C25.5 11 23 7 20 3Z' fill='url(%23g)'/%3E%3Crect x='5' y='18' width='30' height='20' rx='4' stroke='url(%23g)' stroke-width='1.4' fill='url(%23g)' fill-opacity='0.08'/%3E%3Crect x='10' y='23.5' width='20' height='2.4' rx='1.2' fill='url(%23g)' fill-opacity='0.9'/%3E%3Crect x='10' y='28.5' width='13' height='1.8' rx='0.9' fill='url(%23g)' fill-opacity='0.5'/%3E%3Crect x='10' y='32.5' width='16' height='1.8' rx='0.9' fill='url(%23g)' fill-opacity='0.5'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Nunito+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
+  <div class="bg-mesh" aria-hidden="true"></div>
+
+  <div class="app">
+
+    <!-- ═══════════════════════════════ HEADER ═══════════════════════════════ -->
+    <header class="site-header">
+
+      <!-- Logo: flame merged with scroll -->
+      <div class="header-logo">
+        <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="lg" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#E8C27A"/>
+              <stop offset="1" stop-color="#6DD5C4"/>
+            </linearGradient>
+            <linearGradient id="lgFill" x1="20" y1="17" x2="20" y2="40" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#E8C27A" stop-opacity="0.14"/>
+              <stop offset="1" stop-color="#6DD5C4" stop-opacity="0.05"/>
+            </linearGradient>
+          </defs>
+          <!-- Outer flame -->
+          <path d="M20 2.5C17 6.5 14 11 14 14.2C14 17.7 16.7 20 20 20C23.3 20 26 17.7 26 14.2C26 11 23 6.5 20 2.5Z"
+                fill="url(#lg)"/>
+          <!-- Inner flame core highlight -->
+          <path d="M20 8C18.5 10.5 17.5 12.8 17.5 14.2C17.5 15.8 18.6 17 20 17C21.4 17 22.5 15.8 22.5 14.2C22.5 12.8 21.5 10.5 20 8Z"
+                fill="url(#lg)" fill-opacity="0.22"/>
+          <!-- Scroll body (document) -->
+          <rect x="5" y="19" width="30" height="20" rx="4"
+                fill="url(#lgFill)" stroke="url(#lg)" stroke-width="1.4"/>
+          <!-- Shine line at top of scroll -->
+          <rect x="5.7" y="20" width="28.6" height="1.1" rx="0.55"
+                fill="white" fill-opacity="0.07"/>
+          <!-- Scroll text lines -->
+          <rect x="10.5" y="25"  width="19" height="2.4" rx="1.2" fill="url(#lg)" fill-opacity="0.88"/>
+          <rect x="10.5" y="30"  width="12.5" height="1.8" rx="0.9" fill="url(#lg)" fill-opacity="0.46"/>
+          <rect x="10.5" y="34"  width="15.5" height="1.8" rx="0.9" fill="url(#lg)" fill-opacity="0.46"/>
+        </svg>
+        <div class="logo-text">
+          <span class="logo-name">PyroScroll</span>
+          <span class="logo-sub">School Announcements</span>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div class="header-search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input id="searchInput" type="search" placeholder="Search announcements…" autocomplete="off" aria-label="Search announcements"/>
+      </div>
+
+      <!-- Actions -->
+      <div class="header-actions">
+        <button class="btn-admin" id="btnAdmin" style="display:none" aria-label="Staff management">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          <span>Manage Staff</span>
+        </button>
+
+        <div class="user-chip" id="userChip" style="display:none">
+          <img id="userAvatar" src="" alt="" width="26" height="26"/>
+          <span id="userName"></span>
+          <span class="role-badge" id="userRoleBadge"></span>
+        </div>
+
+        <button class="btn-ghost-danger" id="btnSignOut" style="display:none">Sign out</button>
+
+        <button class="btn-google" id="btnLogin">
+          <svg width="15" height="15" viewBox="0 0 18 18" aria-hidden="true">
+            <path d="M17.64 9.2045c0-.638-.0573-1.2518-.1636-1.8409H9v3.4814h4.8436c-.2086 1.125-.8427 2.0782-1.7959 2.7164v2.2581h2.9086c1.7018-1.5668 2.6836-3.874 2.6836-6.615z" fill="#4285F4"/>
+            <path d="M9 18c2.43 0 4.4673-.8059 5.9564-2.1805l-2.9087-2.2581c-.8059.54-1.8368.8591-3.0477.8591-2.3445 0-4.3282-1.5836-5.036-3.7105H.9574v2.3318C2.4382 15.9832 5.4818 18 9 18z" fill="#34A853"/>
+            <path d="M3.964 10.71C3.7845 10.17 3.6818 9.5945 3.6818 9s.1027-1.17.2822-1.71V4.9582H.9573A8.9961 8.9961 0 000 9c0 1.4523.3477 2.8268.9573 4.0418L3.964 10.71z" fill="#FBBC05"/>
+            <path d="M9 3.5795c1.3214 0 2.5077.4541 3.4405 1.346l2.5813-2.5814C13.4627.8918 11.4259 0 9 0 5.4818 0 2.4382 2.0168.9573 4.9582L3.964 7.29C4.6718 5.1632 6.6555 3.5795 9 3.5795z" fill="#EA4335"/>
+          </svg>
+          Sign in with Google
+        </button>
+      </div>
+    </header>
+
+    <!-- ═══════════════════════════════ MAIN ═══════════════════════════════ -->
+    <main>
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Announcements</h1>
+          <p class="page-sub" id="pageSubText">Official communications from staff.</p>
+        </div>
+        <button class="btn-primary" id="btnNewPost" style="display:none">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          New Announcement
+        </button>
+      </div>
+
+      <!-- Stats bar -->
+      <div class="stats-bar">
+        <div class="stat-item">
+          <span class="stat-value" id="statTotal">—</span>
+          <span class="stat-label">Total</span>
+        </div>
+        <div class="stat-sep"></div>
+        <div class="stat-item">
+          <span class="stat-value clr-event" id="statEvents">—</span>
+          <span class="stat-label">Events</span>
+        </div>
+        <div class="stat-sep"></div>
+        <div class="stat-item">
+          <span class="stat-value clr-urgent" id="statUrgent">—</span>
+          <span class="stat-label">Urgent</span>
+        </div>
+        <div class="stat-sep"></div>
+        <div class="stat-item">
+          <span class="stat-value clr-gold" id="statPinned">—</span>
+          <span class="stat-label">Pinned</span>
+        </div>
+      </div>
+
+      <!-- Sign-in nudge (non-staff) -->
+      <div class="login-prompt" id="loginPrompt">
+        <div class="lp-lock">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </div>
+        <p>Sign in with your school Google account to post announcements.</p>
+        <button class="btn-google btn-sm" id="btnLoginPrompt">
+          <svg width="13" height="13" viewBox="0 0 18 18" aria-hidden="true">
+            <path d="M17.64 9.2045c0-.638-.0573-1.2518-.1636-1.8409H9v3.4814h4.8436c-.2086 1.125-.8427 2.0782-1.7959 2.7164v2.2581h2.9086c1.7018-1.5668 2.6836-3.874 2.6836-6.615z" fill="#4285F4"/>
+            <path d="M9 18c2.43 0 4.4673-.8059 5.9564-2.1805l-2.9087-2.2581c-.8059.54-1.8368.8591-3.0477.8591-2.3445 0-4.3282-1.5836-5.036-3.7105H.9574v2.3318C2.4382 15.9832 5.4818 18 9 18z" fill="#34A853"/>
+            <path d="M3.964 10.71C3.7845 10.17 3.6818 9.5945 3.6818 9s.1027-1.17.2822-1.71V4.9582H.9573A8.9961 8.9961 0 000 9c0 1.4523.3477 2.8268.9573 4.0418L3.964 10.71z" fill="#FBBC05"/>
+            <path d="M9 3.5795c1.3214 0 2.5077.4541 3.4405 1.346l2.5813-2.5814C13.4627.8918 11.4259 0 9 0 5.4818 0 2.4382 2.0168.9573 4.9582L3.964 7.29C4.6718 5.1632 6.6555 3.5795 9 3.5795z" fill="#EA4335"/>
+          </svg>
+          Sign in
+        </button>
+      </div>
+
+      <!-- ─────── POST / EDIT FORM ─────── -->
+      <div class="form-wrap" id="postFormWrap" style="display:none">
+        <div class="glass-card form-card">
+          <div class="form-card-head">
+            <h3 class="form-card-title" id="formCardTitle">New Announcement</h3>
+            <button class="btn-icon" id="btnCancelForm" aria-label="Close form">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <path d="M18 6 6 18M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="form-body">
+            <!-- Row 1: title + category -->
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="fTitle">Title</label>
+                <input class="form-control" id="fTitle" type="text" placeholder="Announcement title" maxlength="100" autocomplete="off"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="fCategory">Category</label>
+                <select class="form-control" id="fCategory">
+                  <option value="general">General</option>
+                  <option value="event">Event</option>
+                  <option value="academic">Academic</option>
+                  <option value="urgent">Urgent</option>
+                  <option value="administrative">Administrative</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Row 2: body -->
+            <div class="form-group">
+              <label class="form-label" for="fBody">Message</label>
+              <textarea class="form-control" id="fBody" placeholder="Write your announcement here…" maxlength="1200"></textarea>
+            </div>
+
+            <!-- ──────── MEDIA UPLOAD SECTION ──────── -->
+            <div class="form-group">
+              <label class="form-label">
+                Media
+                <span class="form-hint">image or video — optional</span>
+              </label>
+
+              <!--
+                Drop zone — visible when no file is staged.
+                Click or drag-drop to select a file.
+              -->
+              <div class="upload-zone" id="uploadZone" tabindex="0" role="button" aria-label="Upload image or video — click or drag and drop">
+                <!-- Hidden real file input; triggered programmatically -->
+                <input type="file" id="fMedia"
+                       accept="image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm,video/quicktime"
+                       hidden aria-hidden="true"/>
+
+                <svg class="upload-zone-icon" width="30" height="30" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+                  <rect x="3" y="3" width="18" height="18" rx="3"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <path d="m21 15-5-5L5 21"/>
+                </svg>
+                <p class="upload-zone-text">Drop an image or video here</p>
+                <button type="button" class="btn-upload-browse" id="btnBrowseMedia">Browse files</button>
+                <p class="upload-zone-limit">Images up to 10 MB &nbsp;&middot;&nbsp; Videos up to 100 MB</p>
+              </div>
+
+              <!--
+                Preview panel — shown once a file is staged.
+                Contains: media thumbnail/video, filename, size, remove button,
+                and (during submit) an upload progress bar.
+              -->
+              <div class="upload-preview" id="uploadPreview" style="display:none">
+                <!-- The actual img or video element is injected here by JS -->
+                <div class="upload-preview-media" id="uploadPreviewMedia"></div>
+
+                <div class="upload-preview-bar">
+                  <div class="upload-preview-info">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                      <polyline points="13 2 13 9 20 9"/>
+                    </svg>
+                    <span id="previewFileName" class="upload-filename"></span>
+                    <span class="upload-sep">&middot;</span>
+                    <span id="previewFileSize" class="upload-filesize"></span>
+                  </div>
+                  <button type="button" class="btn-remove-media" id="btnRemoveMedia" aria-label="Remove selected media">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                      <path d="M18 6 6 18M6 6l12 12"/>
+                    </svg>
+                    Remove
+                  </button>
+                </div>
+
+                <!--
+                  Upload progress bar.
+                  Hidden until form is submitted and upload starts.
+                  aria-valuenow updated by JS.
+                -->
+                <div class="upload-progress" id="uploadProgress" style="display:none"
+                     role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+                     aria-label="Upload progress">
+                  <div class="upload-progress-track">
+                    <div class="upload-progress-fill" id="uploadProgressFill"></div>
+                  </div>
+                  <span class="upload-progress-pct" id="uploadProgressPct">0%</span>
+                </div>
+              </div>
+            </div>
+            <!-- ──────── END MEDIA ──────── -->
+
+            <!-- Row 3: expiry + resource URL -->
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="fExpiry">
+                  Expiry Date
+                  <span class="form-hint">optional</span>
+                </label>
+                <input class="form-control" id="fExpiry" type="date"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="fAttachment">
+                  Resource URL
+                  <span class="form-hint">optional</span>
+                </label>
+                <input class="form-control" id="fAttachment" type="url" placeholder="https://…" autocomplete="off"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card-foot">
+            <button class="btn-primary" id="btnPostSubmit">Post Announcement</button>
+            <span class="char-count" id="charCount">0 / 1200</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category filter bar -->
+      <div class="filter-row">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="general">General</button>
+        <button class="filter-btn" data-filter="event">Events</button>
+        <button class="filter-btn" data-filter="academic">Academic</button>
+        <button class="filter-btn" data-filter="urgent">Urgent</button>
+        <button class="filter-btn" data-filter="administrative">Administrative</button>
+      </div>
+
+      <!-- Announcement list -->
+      <div class="ann-list" id="annList" role="list"></div>
+
+      <!-- Empty state -->
+      <div class="empty-state" id="emptyState" style="display:none">
+        <svg class="empty-icon" width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+          <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+          <rect x="9" y="3" width="6" height="4" rx="1"/>
+          <path d="M9 12h6M9 16h4"/>
+        </svg>
+        <p class="empty-title">No announcements</p>
+        <p class="empty-sub" id="emptySub">Check back later or adjust filters.</p>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ═══════════════════════════════ ADMIN MODAL ═══════════════════════════════ -->
+  <div class="modal-overlay" id="adminModal" style="display:none"
+       role="dialog" aria-modal="true" aria-labelledby="adminModalTitle">
+    <div class="modal glass-card">
+      <div class="modal-head">
+        <h2 class="modal-title" id="adminModalTitle">Staff Management</h2>
+        <button class="btn-icon" id="btnCloseAdmin" aria-label="Close panel">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <path d="M18 6 6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <section class="admin-section">
+          <h3 class="admin-section-title">Assign Teacher</h3>
+          <p class="admin-section-desc">
+            Enter a teacher's school Google email. They must have signed in to PyroScroll at least once before they can be assigned.
+          </p>
+          <div class="admin-add-row">
+            <input class="form-control" id="teacherEmailInput" type="email" placeholder="teacher@phcol.ie" autocomplete="off"/>
+            <button class="btn-primary btn-sm" id="btnAddTeacher">Assign</button>
+          </div>
+          <p class="admin-feedback" id="addFeedback"></p>
+        </section>
+        <section class="admin-section">
+          <h3 class="admin-section-title">Current Teachers</h3>
+          <div class="teacher-list" id="teacherList">
+            <p class="text-dim">Loading…</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" role="alert" aria-live="polite"></div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
