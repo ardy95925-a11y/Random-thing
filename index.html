@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FireOS Desktop</title>
+<link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --fire-orange: #FF6B00;
+    --fire-amber: #FF9500;
+    --fire-red: #E8320A;
+    --win-blue: #0067C0;
+    --win-dark: #1a1a2e;
+    --win-glass: rgba(30,30,50,0.72);
+    --win-glass-light: rgba(255,255,255,0.08);
+    --taskbar-h: 48px;
+    --accent: #FF6B00;
+    --accent2: #FF9500;
+    --text: #ffffff;
+    --text-dim: rgba(255,255,255,0.65);
+    --border-glass: rgba(255,150,0,0.18);
+    --shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+  
+  body {
+    width: 100vw; height: 100vh; overflow: hidden;
+    font-family: 'Segoe UI', 'Nunito', sans-serif;
+    color: var(--text);
+    background: #000;
+  }
+
+  /* ══════════════ DESKTOP ══════════════ */
+  #desktop {
+    width: 100%; height: calc(100% - var(--taskbar-h));
+    position: relative; overflow: hidden;
+    background:
+      radial-gradient(ellipse 120% 80% at 80% 110%, #FF6B0033 0%, transparent 60%),
+      radial-gradient(ellipse 80% 60% at 10% -10%, #FF950022 0%, transparent 55%),
+      radial-gradient(ellipse 60% 80% at 50% 50%, #0a0a1a 0%, #111130 100%),
+      linear-gradient(135deg, #0d0d2b 0%, #1a0a0a 50%, #0a0d1a 100%);
+  }
+
+  /* Animated background stars */
+  #desktop::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(255,200,100,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 30% 5%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 55% 20%, rgba(255,180,80,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 8%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(2px 2px at 85% 18%, rgba(255,150,0,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 20% 40%, rgba(255,255,255,0.25) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 35%, rgba(255,200,100,0.35) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 45% 60%, rgba(255,255,255,0.2) 0%, transparent 100%),
+      radial-gradient(1px 1px at 5% 70%, rgba(255,150,0,0.3) 0%, transparent 100%),
+      radial-gradient(2px 2px at 65% 75%, rgba(255,255,255,0.15) 0%, transparent 100%);
+    pointer-events: none;
+  }
+
+  /* Aurora glow effect */
+  #desktop::after {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 40% 30% at 75% 80%, rgba(255,107,0,0.15) 0%, transparent 70%),
+      radial-gradient(ellipse 30% 20% at 20% 90%, rgba(255,149,0,0.1) 0%, transparent 70%);
+    pointer-events: none;
+    animation: aurora 8s ease-in-out infinite alternate;
+  }
+
+  @keyframes aurora {
+    0% { opacity: 0.6; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1.05); }
+  }
+
+  /* ══════════════ DESKTOP ICONS ══════════════ */
+  #icon-grid {
+    position: absolute;
+    top: 20px; left: 20px;
+    display: flex; flex-direction: column;
+    flex-wrap: wrap; gap: 8px;
+    max-height: calc(100% - 40px);
+    width: 90px;
+    z-index: 10;
+  }
+
+  .desk-icon {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 5px;
+    padding: 8px 4px; border-radius: 8px;
+    cursor: pointer; width: 82px;
+    transition: background 0.15s;
+  }
+  .desk-icon:hover { background: rgba(255,107,0,0.18); }
+  .desk-icon:active { background: rgba(255,107,0,0.3); }
+
+  .desk-icon .ico {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; position: relative;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  }
+  .desk-icon .lbl {
+    font-size: 11px; font-weight: 600; text-align: center;
+    line-height: 1.2; text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+    letter-spacing: 0.01em;
+  }
+
+  /* ══════════════ TASKBAR ══════════════ */
+  #taskbar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    height: var(--taskbar-h);
+    background: rgba(12,12,20,0.92);
+    backdrop-filter: blur(24px) saturate(180%);
+    border-top: 1px solid rgba(255,107,0,0.2);
+    display: flex; align-items: center;
+    padding: 0 8px; gap: 4px;
+    z-index: 9000;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.5);
+  }
+
+  #start-btn {
+    width: 40px; height: 40px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background 0.15s;
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+  }
+  #start-btn:hover { background: rgba(255,107,0,0.2); }
+  #start-btn.active { background: rgba(255,107,0,0.3); }
+  #start-btn svg { width: 22px; height: 22px; }
+
+  #search-bar {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px; padding: 0 12px;
+    height: 34px; cursor: text; min-width: 160px;
+    transition: all 0.2s;
+  }
+  #search-bar:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,107,0,0.4);
+  }
+  #search-bar span { font-size: 12px; color: var(--text-dim); }
+
+  #taskbar-apps { display: flex; align-items: center; gap: 2px; flex: 1; padding: 0 8px; }
+
+  .tb-app {
+    height: 40px; padding: 0 10px; border-radius: 6px;
+    display: flex; align-items: center; gap: 6px;
+    cursor: pointer; transition: background 0.15s;
+    font-size: 13px; font-weight: 500;
+    position: relative; white-space: nowrap;
+  }
+  .tb-app:hover { background: rgba(255,255,255,0.08); }
+  .tb-app.active {
+    background: rgba(255,107,0,0.18);
+  }
+  .tb-app.active::after {
+    content: ''; position: absolute;
+    bottom: -1px; left: 50%; transform: translateX(-50%);
+    width: 60%; height: 2px; border-radius: 2px;
+    background: var(--fire-orange);
+  }
+  .tb-app .ico { font-size: 18px; }
+
+  #systray {
+    display: flex; align-items: center; gap: 8px;
+    padding: 0 8px; flex-shrink: 0;
+  }
+  .tray-icon {
+    font-size: 16px; cursor: pointer; opacity: 0.75;
+    transition: opacity 0.15s;
+    padding: 4px;
+  }
+  .tray-icon:hover { opacity: 1; }
+
+  #clock {
+    display: flex; flex-direction: column;
+    align-items: flex-end; cursor: default;
+    padding: 2px 8px; border-radius: 6px;
+    transition: background 0.15s;
+  }
+  #clock:hover { background: rgba(255,255,255,0.08); }
+  #clock-time { font-size: 13px; font-weight: 600; letter-spacing: 0.02em; }
+  #clock-date { font-size: 10px; color: var(--text-dim); }
+
+  /* ══════════════ START MENU ══════════════ */
+  #start-menu {
+    position: fixed; bottom: calc(var(--taskbar-h) + 8px); left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    width: 660px; max-width: 95vw;
+    background: rgba(12,12,22,0.96);
+    backdrop-filter: blur(40px) saturate(200%);
+    border: 1px solid rgba(255,107,0,0.2);
+    border-radius: 16px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04);
+    z-index: 9500; padding: 24px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  #start-menu.open {
+    opacity: 1; pointer-events: all;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  #start-search {
+    width: 100%; background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,107,0,0.25);
+    border-radius: 24px; padding: 10px 18px;
+    color: white; font-size: 14px; outline: none;
+    font-family: inherit; margin-bottom: 20px;
+    transition: border-color 0.2s;
+  }
+  #start-search:focus { border-color: var(--fire-orange); }
+  #start-search::placeholder { color: rgba(255,255,255,0.4); }
+
+  .sm-section-title {
+    font-size: 11px; font-weight: 700;
+    color: rgba(255,107,0,0.8); letter-spacing: 0.1em;
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+
+  .sm-apps {
+    display: grid; grid-template-columns: repeat(6, 1fr);
+    gap: 8px; margin-bottom: 20px;
+  }
+  .sm-app {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 6px; padding: 10px 4px;
+    border-radius: 10px; cursor: pointer;
+    transition: background 0.15s;
+  }
+  .sm-app:hover { background: rgba(255,107,0,0.15); }
+  .sm-app .ico {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  }
+  .sm-app .lbl { font-size: 11px; text-align: center; color: var(--text-dim); }
+
+  .sm-recents { display: flex; flex-direction: column; gap: 4px; }
+  .sm-recent {
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 10px; border-radius: 8px; cursor: pointer;
+    transition: background 0.15s;
+  }
+  .sm-recent:hover { background: rgba(255,255,255,0.06); }
+  .sm-recent .ico { font-size: 20px; width: 32px; text-align: center; }
+  .sm-recent .info { flex: 1; }
+  .sm-recent .name { font-size: 13px; }
+  .sm-recent .sub { font-size: 11px; color: var(--text-dim); }
+
+  .sm-footer {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-top: 20px;
+    padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.07);
+  }
+  .sm-user {
+    display: flex; align-items: center; gap: 10px; cursor: pointer;
+  }
+  .sm-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--fire-orange), var(--fire-red));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700;
+  }
+  .sm-username { font-size: 13px; font-weight: 600; }
+  .sm-power-btns { display: flex; gap: 6px; }
+  .sm-power-btn {
+    width: 34px; height: 34px; border-radius: 8px;
+    background: rgba(255,255,255,0.06); border: none;
+    color: white; font-size: 16px; cursor: pointer;
+    transition: background 0.15s; display: flex;
+    align-items: center; justify-content: center;
+  }
+  .sm-power-btn:hover { background: rgba(255,107,0,0.25); }
+
+  /* ══════════════ WINDOWS ══════════════ */
+  .win {
+    position: absolute; min-width: 320px; min-height: 200px;
+    background: rgba(14,14,26,0.95);
+    backdrop-filter: blur(30px) saturate(160%);
+    border: 1px solid rgba(255,107,0,0.18);
+    border-radius: 12px; overflow: hidden;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04);
+    display: flex; flex-direction: column;
+    resize: both;
+    transition: box-shadow 0.2s;
+  }
+  .win:focus-within, .win.focused {
+    border-color: rgba(255,107,0,0.4);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,107,0,0.15);
+  }
+
+  .win-titlebar {
+    display: flex; align-items: center;
+    padding: 0 12px; height: 36px;
+    background: rgba(255,255,255,0.04);
+    border-bottom: 1px solid rgba(255,107,0,0.12);
+    cursor: move; flex-shrink: 0; gap: 8px;
+  }
+
+  .win-icon { font-size: 16px; }
+  .win-title { flex: 1; font-size: 13px; font-weight: 600; color: var(--text-dim); }
+  .win-controls { display: flex; gap: 4px; }
+  .win-btn {
+    width: 28px; height: 22px; border-radius: 5px;
+    border: none; cursor: pointer; font-size: 12px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s; color: white;
+    background: rgba(255,255,255,0.06);
+  }
+  .win-btn:hover { background: rgba(255,255,255,0.12); }
+  .win-btn.close:hover { background: #c42b1c; }
+  .win-btn.minimize:hover { background: rgba(255,107,0,0.3); }
+  .win-btn.maximize:hover { background: rgba(255,107,0,0.3); }
+
+  .win-body {
+    flex: 1; overflow: auto; position: relative;
+  }
+
+  /* scrollbar */
+  .win-body::-webkit-scrollbar { width: 6px; }
+  .win-body::-webkit-scrollbar-track { background: transparent; }
+  .win-body::-webkit-scrollbar-thumb { background: rgba(255,107,0,0.3); border-radius: 3px; }
+
+  /* ══════════════ FILE EXPLORER ══════════════ */
+  #win-explorer .win-body {
+    display: flex; flex-direction: column;
+  }
+  .explorer-toolbar {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.02); flex-shrink: 0;
+  }
+  .explorer-navbtn {
+    width: 28px; height: 28px; border-radius: 6px;
+    background: rgba(255,255,255,0.06); border: none;
+    color: white; font-size: 14px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .explorer-navbtn:hover { background: rgba(255,107,0,0.2); }
+  .explorer-path {
+    flex: 1; background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 20px;
+    padding: 4px 12px; color: white; font-size: 12px;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .explorer-body { display: flex; flex: 1; overflow: hidden; }
+  .explorer-sidebar {
+    width: 160px; border-right: 1px solid rgba(255,255,255,0.05);
+    padding: 8px 0; flex-shrink: 0; overflow-y: auto;
+  }
+  .sidebar-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 14px; font-size: 12px; cursor: pointer;
+    transition: background 0.1s; color: var(--text-dim);
+    border-left: 2px solid transparent;
+  }
+  .sidebar-item:hover { background: rgba(255,255,255,0.05); color: white; }
+  .sidebar-item.active {
+    background: rgba(255,107,0,0.12); color: white;
+    border-left-color: var(--fire-orange);
+  }
+  .sidebar-item .ico { font-size: 15px; }
+
+  .explorer-files {
+    flex: 1; padding: 12px; overflow-y: auto;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 8px; align-content: start;
+  }
+  .file-item {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 4px; padding: 8px 4px;
+    border-radius: 8px; cursor: pointer; transition: background 0.15s;
+  }
+  .file-item:hover { background: rgba(255,107,0,0.12); }
+  .file-item:active { background: rgba(255,107,0,0.22); }
+  .file-item .ico { font-size: 28px; }
+  .file-item .lbl { font-size: 10px; text-align: center; color: var(--text-dim); line-height: 1.2; }
+
+  /* ══════════════ BROWSER WINDOW ══════════════ */
+  .browser-bar {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 10px; background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0;
+  }
+  .browser-url {
+    flex: 1; background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 20px;
+    padding: 5px 14px; color: white; font-size: 12px;
+    outline: none; font-family: inherit;
+    transition: border-color 0.2s;
+  }
+  .browser-url:focus { border-color: var(--fire-orange); }
+  .browser-navbtn {
+    width: 28px; height: 28px; border-radius: 6px;
+    background: rgba(255,255,255,0.06); border: none;
+    color: white; font-size: 14px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .browser-navbtn:hover { background: rgba(255,107,0,0.2); }
+  .browser-content {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 16px; padding: 24px;
+  }
+  .browser-logo {
+    font-size: 48px; line-height: 1;
+  }
+  .browser-tagline {
+    font-size: 22px; font-weight: 700;
+    background: linear-gradient(135deg, var(--fire-orange), var(--fire-amber));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    text-align: center;
+  }
+  .browser-quick-links {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 10px; width: 100%; max-width: 380px;
+  }
+  .quick-link {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 6px; padding: 12px 8px;
+    background: rgba(255,255,255,0.05); border-radius: 10px;
+    cursor: pointer; transition: background 0.15s;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .quick-link:hover { background: rgba(255,107,0,0.15); border-color: rgba(255,107,0,0.3); }
+  .quick-link .ico { font-size: 22px; }
+  .quick-link .lbl { font-size: 10px; color: var(--text-dim); }
+
+  /* ══════════════ SETTINGS WINDOW ══════════════ */
+  .settings-body {
+    display: flex; height: 100%;
+  }
+  .settings-nav {
+    width: 200px; padding: 12px 0;
+    border-right: 1px solid rgba(255,255,255,0.06);
+    flex-shrink: 0;
+  }
+  .settings-nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px; cursor: pointer; font-size: 13px;
+    color: var(--text-dim); transition: all 0.15s;
+    border-left: 2px solid transparent;
+  }
+  .settings-nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
+  .settings-nav-item.active {
+    background: rgba(255,107,0,0.12); color: white;
+    border-left-color: var(--fire-orange);
+  }
+  .settings-content { flex: 1; padding: 20px; overflow-y: auto; }
+  .settings-section-title {
+    font-size: 18px; font-weight: 700; margin-bottom: 16px;
+    color: white;
+  }
+  .settings-card {
+    background: rgba(255,255,255,0.04); border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.07); margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .settings-row {
+    display: flex; align-items: center; padding: 14px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.05); gap: 12px;
+  }
+  .settings-row:last-child { border-bottom: none; }
+  .settings-row .ico { font-size: 20px; width: 28px; text-align: center; }
+  .settings-row .info { flex: 1; }
+  .settings-row .info .name { font-size: 13px; font-weight: 600; }
+  .settings-row .info .sub { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+  /* Toggle switch */
+  .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+  .toggle input { display: none; }
+  .toggle-slider {
+    position: absolute; inset: 0; border-radius: 12px;
+    background: rgba(255,255,255,0.15); cursor: pointer;
+    transition: background 0.2s;
+  }
+  .toggle-slider::after {
+    content: ''; position: absolute;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: white; top: 3px; left: 3px;
+    transition: transform 0.2s;
+  }
+  .toggle input:checked + .toggle-slider { background: var(--fire-orange); }
+  .toggle input:checked + .toggle-slider::after { transform: translateX(20px); }
+
+  /* ══════════════ NOTEPAD ══════════════ */
+  .notepad-toolbar {
+    display: flex; gap: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    flex-shrink: 0;
+  }
+  .notepad-menu {
+    padding: 5px 12px; font-size: 12px; cursor: pointer;
+    color: var(--text-dim); transition: all 0.15s; border-radius: 0;
+  }
+  .notepad-menu:hover { background: rgba(255,107,0,0.15); color: white; }
+  #notepad-text {
+    flex: 1; background: transparent; border: none; outline: none;
+    color: white; font-size: 13px; line-height: 1.7;
+    font-family: 'Courier New', monospace;
+    padding: 16px; resize: none; width: 100%;
+    caret-color: var(--fire-orange);
+  }
+
+  /* ══════════════ CALENDAR ══════════════ */
+  .cal-body { padding: 16px; }
+  .cal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .cal-month {
+    font-size: 16px; font-weight: 700;
+    background: linear-gradient(135deg, var(--fire-orange), var(--fire-amber));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .cal-nav {
+    background: rgba(255,255,255,0.06); border: none;
+    color: white; width: 28px; height: 28px; border-radius: 6px;
+    cursor: pointer; font-size: 14px; display: flex;
+    align-items: center; justify-content: center;
+    transition: background 0.15s;
+  }
+  .cal-nav:hover { background: rgba(255,107,0,0.25); }
+  .cal-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+  .cal-day-header {
+    text-align: center; font-size: 10px; font-weight: 700;
+    color: rgba(255,107,0,0.7); letter-spacing: 0.05em;
+    padding: 4px 0; text-transform: uppercase;
+  }
+  .cal-day {
+    aspect-ratio: 1; display: flex; align-items: center;
+    justify-content: center; border-radius: 6px;
+    font-size: 12px; cursor: pointer; transition: background 0.15s;
+    color: var(--text-dim);
+  }
+  .cal-day:hover { background: rgba(255,107,0,0.15); color: white; }
+  .cal-day.today {
+    background: var(--fire-orange); color: white; font-weight: 700;
+  }
+  .cal-day.other-month { opacity: 0.3; }
+  .cal-events { margin-top: 16px; }
+  .cal-event {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; background: rgba(255,107,0,0.1);
+    border-left: 3px solid var(--fire-orange);
+    border-radius: 0 8px 8px 0; margin-bottom: 8px;
+  }
+  .cal-event .time { font-size: 11px; color: var(--fire-amber); font-weight: 600; }
+  .cal-event .title { font-size: 12px; }
+
+  /* ══════════════ NOTIFICATION ══════════════ */
+  #notif-area {
+    position: fixed; bottom: calc(var(--taskbar-h) + 12px); right: 12px;
+    display: flex; flex-direction: column; gap: 8px;
+    z-index: 9800; pointer-events: none;
+  }
+  .notif {
+    background: rgba(14,14,26,0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,107,0,0.25);
+    border-radius: 12px; padding: 14px 16px;
+    display: flex; gap: 12px; align-items: flex-start;
+    width: 300px; pointer-events: all;
+    animation: notif-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  }
+  @keyframes notif-in {
+    from { opacity: 0; transform: translateX(60px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .notif-icon { font-size: 22px; }
+  .notif-content { flex: 1; }
+  .notif-title { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+  .notif-body { font-size: 12px; color: var(--text-dim); line-height: 1.4; }
+  .notif-close {
+    background: none; border: none; color: var(--text-dim);
+    cursor: pointer; font-size: 16px; padding: 0; line-height: 1;
+  }
+  .notif-close:hover { color: white; }
+  .notif-time { font-size: 10px; color: rgba(255,107,0,0.6); margin-top: 4px; }
+
+  /* ══════════════ CONTEXT MENU ══════════════ */
+  #ctx-menu {
+    position: fixed; z-index: 9900;
+    background: rgba(14,14,26,0.97);
+    backdrop-filter: blur(30px);
+    border: 1px solid rgba(255,107,0,0.2);
+    border-radius: 10px; padding: 6px;
+    box-shadow: 0 12px 36px rgba(0,0,0,0.6);
+    min-width: 180px;
+    display: none;
+  }
+  #ctx-menu.show { display: block; }
+  .ctx-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; border-radius: 6px;
+    cursor: pointer; font-size: 13px;
+    color: var(--text-dim); transition: all 0.1s;
+  }
+  .ctx-item:hover { background: rgba(255,107,0,0.15); color: white; }
+  .ctx-item .ico { font-size: 15px; width: 18px; text-align: center; }
+  .ctx-divider {
+    height: 1px; background: rgba(255,255,255,0.07);
+    margin: 4px 0;
+  }
+
+  /* ══════════════ UTILS ══════════════ */
+  .gradient-icon-fire { background: linear-gradient(135deg, #FF6B00, #FF4500); }
+  .gradient-icon-blue { background: linear-gradient(135deg, #0078D4, #00A2E8); }
+  .gradient-icon-green { background: linear-gradient(135deg, #107C10, #00B04F); }
+  .gradient-icon-purple { background: linear-gradient(135deg, #744DA9, #B97AE7); }
+  .gradient-icon-amber { background: linear-gradient(135deg, #FF8C00, #FFC300); }
+  .gradient-icon-teal { background: linear-gradient(135deg, #008080, #00CED1); }
+  .gradient-icon-red { background: linear-gradient(135deg, #C42B1C, #FF4444); }
+  .gradient-icon-indigo { background: linear-gradient(135deg, #3B3DC3, #6B7FFF); }
+  .gradient-icon-pink { background: linear-gradient(135deg, #C13584, #E1306C); }
+  .gradient-icon-dark { background: linear-gradient(135deg, #2a2a40, #3a3a55); }
+</style>
+</head>
+<body>
+
+<!-- DESKTOP -->
+<div id="desktop" oncontextmenu="showCtxMenu(event)">
+  
+  <!-- Desktop Icons -->
+  <div id="icon-grid">
+    <div class="desk-icon" ondblclick="openWindow('win-explorer')">
+      <div class="ico gradient-icon-amber">📁</div>
+      <div class="lbl">Files</div>
+    </div>
+    <div class="desk-icon" ondblclick="openWindow('win-browser')">
+      <div class="ico gradient-icon-fire">🔥</div>
+      <div class="lbl">Fire Browser</div>
+    </div>
+    <div class="desk-icon" ondblclick="openWindow('win-notepad')">
+      <div class="ico gradient-icon-dark">📝</div>
+      <div class="lbl">Notepad</div>
+    </div>
+    <div class="desk-icon" ondblclick="openWindow('win-calendar')">
+      <div class="ico gradient-icon-red">📅</div>
+      <div class="lbl">Calendar</div>
+    </div>
+    <div class="desk-icon" ondblclick="openWindow('win-settings')">
+      <div class="ico gradient-icon-indigo">⚙️</div>
+      <div class="lbl">Settings</div>
+    </div>
+    <div class="desk-icon" ondblclick="openWindow('win-store')">
+      <div class="ico gradient-icon-fire">🛒</div>
+      <div class="lbl">Fire Store</div>
+    </div>
+    <div class="desk-icon" ondblclick="showNotif('🎵','Fire Music','Now playing: Hot Summer Nights by Fire Band')">
+      <div class="ico gradient-icon-purple">🎵</div>
+      <div class="lbl">Music</div>
+    </div>
+    <div class="desk-icon" ondblclick="showNotif('📸','Camera','Accessing camera... Ready!')">
+      <div class="ico gradient-icon-teal">📸</div>
+      <div class="lbl">Camera</div>
+    </div>
+  </div>
+
+  <!-- ═══ WINDOW: FILE EXPLORER ═══ -->
+  <div class="win" id="win-explorer" style="width:640px;height:420px;top:80px;left:120px;display:none;z-index:100">
+    <div class="win-titlebar" onmousedown="startDrag(event,'win-explorer')">
+      <span class="win-icon">📁</span>
+      <span class="win-title">File Explorer</span>
+      <div class="win-controls">
+        <button class="win-btn minimize" onclick="minimizeWin('win-explorer')">─</button>
+        <button class="win-btn maximize" onclick="maximizeWin('win-explorer')">□</button>
+        <button class="win-btn close" onclick="closeWindow('win-explorer')">✕</button>
+      </div>
+    </div>
+    <div class="win-body" id="win-explorer-body">
+      <div class="explorer-toolbar">
+        <button class="explorer-navbtn">←</button>
+        <button class="explorer-navbtn">→</button>
+        <button class="explorer-navbtn">↑</button>
+        <div class="explorer-path">🏠 This Device › Documents</div>
+        <button class="explorer-navbtn">🔍</button>
+      </div>
+      <div class="explorer-body">
+        <div class="explorer-sidebar">
+          <div class="sidebar-item active"><span class="ico">🏠</span>Home</div>
+          <div class="sidebar-item"><span class="ico">🖥️</span>This Device</div>
+          <div class="sidebar-item"><span class="ico">🔥</span>Fire Drive</div>
+          <div class="sidebar-item"><span class="ico">📄</span>Documents</div>
+          <div class="sidebar-item"><span class="ico">🖼️</span>Photos</div>
+          <div class="sidebar-item"><span class="ico">🎵</span>Music</div>
+          <div class="sidebar-item"><span class="ico">🎬</span>Videos</div>
+          <div class="sidebar-item"><span class="ico">⬇️</span>Downloads</div>
+          <div class="sidebar-item"><span class="ico">🗑️</span>Recycle Bin</div>
+        </div>
+        <div class="explorer-files">
+          <div class="file-item"><span class="ico">📂</span><span class="lbl">Projects</span></div>
+          <div class="file-item"><span class="ico">📂</span><span class="lbl">Work Docs</span></div>
+          <div class="file-item"><span class="ico">📂</span><span class="lbl">Photos</span></div>
+          <div class="file-item"><span class="ico">📄</span><span class="lbl">Report.docx</span></div>
+          <div class="file-item"><span class="ico">📊</span><span class="lbl">Budget.xlsx</span></div>
+          <div class="file-item"><span class="ico">🖼️</span><span class="lbl">wallpaper.jpg</span></div>
+          <div class="file-item"><span class="ico">🎵</span><span class="lbl">playlist.mp3</span></div>
+          <div class="file-item"><span class="ico">📝</span><span class="lbl">notes.txt</span></div>
+          <div class="file-item"><span class="ico">🗜️</span><span class="lbl">archive.zip</span></div>
+          <div class="file-item"><span class="ico">📑</span><span class="lbl">Resume.pdf</span></div>
+          <div class="file-item"><span class="ico">📂</span><span class="lbl">Downloads</span></div>
+          <div class="file-item"><span class="ico">🎬</span><span class="lbl">video.mp4</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ WINDOW: BROWSER ═══ -->
+  <div class="win" id="win-browser" style="width:680px;height:460px;top:60px;left:200px;display:none;z-index:100">
+    <div class="win-titlebar" onmousedown="startDrag(event,'win-browser')">
+      <span class="win-icon">🔥</span>
+      <span class="win-title">Fire Browser — New Tab</span>
+      <div class="win-controls">
+        <button class="win-btn minimize" onclick="minimizeWin('win-browser')">─</button>
+        <button class="win-btn maximize" onclick="maximizeWin('win-browser')">□</button>
+        <button class="win-btn close" onclick="closeWindow('win-browser')">✕</button>
+      </div>
+    </div>
+    <div class="win-body" style="display:flex;flex-direction:column">
+      <div class="browser-bar">
+        <button class="browser-navbtn">←</button>
+        <button class="browser-navbtn">→</button>
+        <button class="browser-navbtn">↺</button>
+        <input class="browser-url" value="fire://newtab" spellcheck="false">
+        <button class="browser-navbtn">⭐</button>
+        <button class="browser-navbtn">⋯</button>
+      </div>
+      <div class="browser-content">
+        <div class="browser-logo">🔥</div>
+        <div class="browser-tagline">Fire Browser</div>
+        <div style="font-size:12px;color:var(--text-dim);margin-top:-8px">Blazing fast. Always on fire.</div>
+        <div class="browser-quick-links">
+          <div class="quick-link"><span class="ico">🛒</span><span class="lbl">Amazon</span></div>
+          <div class="quick-link"><span class="ico">📺</span><span class="lbl">Prime Video</span></div>
+          <div class="quick-link"><span class="ico">🎵</span><span class="lbl">Fire Music</span></div>
+          <div class="quick-link"><span class="ico">📰</span><span class="lbl">Fire News</span></div>
+          <div class="quick-link"><span class="ico">📚</span><span class="lbl">Kindle</span></div>
+          <div class="quick-link"><span class="ico">🌤️</span><span class="lbl">Weather</span></div>
+          <div class="quick-link"><span class="ico">🗺️</span><span class="lbl">Maps</span></div>
+          <div class="quick-link"><span class="ico">⚙️</span><span class="lbl">Settings</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ WINDOW: NOTEPAD ═══ -->
+  <div class="win" id="win-notepad" style="width:480px;height:360px;top:140px;left:300px;display:none;z-index:100">
+    <div class="win-titlebar" onmousedown="startDrag(event,'win-notepad')">
+      <span class="win-icon">📝</span>
+      <span class="win-title">Notepad — Untitled</span>
+      <div class="win-controls">
+        <button class="win-btn minimize" onclick="minimizeWin('win-notepad')">─</button>
+        <button class="win-btn maximize" onclick="maximizeWin('win-notepad')">□</button>
+        <button class="win-btn close" onclick="closeWindow('win-notepad')">✕</button>
+      </div>
+    </div>
+    <div class="win-body" style="display:flex;flex-direction:column">
+      <div class="notepad-toolbar">
+        <div class="notepad-menu">File</div>
+        <div class="notepad-menu">Edit</div>
+        <div class="notepad-menu">View</div>
+        <div class="notepad-menu">Format</div>
+      </div>
+      <textarea id="notepad-text" placeholder="Start typing...">🔥 FireOS Desktop Notes
+
+Welcome to FireOS — the blazing fast hybrid of Windows and Amazon Fire!
+
+✅ Drag windows around the screen
+✅ Double-click desktop icons to open apps  
+✅ Right-click desktop for context menu
+✅ Click the 🔥 Start button on taskbar
+✅ Windows can be resized from the bottom-right corner
+
+Built for speed. Built for fire. 🔥
+</textarea>
+    </div>
+  </div>
+
+  <!-- ═══ WINDOW: CALENDAR ═══ -->
+  <div class="win" id="win-calendar" style="width:380px;height:480px;top:100px;left:400px;display:none;z-index:100">
+    <div class="win-titlebar" onmousedown="startDrag(event,'win-calendar')">
+      <span class="win-icon">📅</span>
+      <span class="win-title">Calendar</span>
+      <div class="win-controls">
+        <button class="win-btn minimize" onclick="minimizeWin('win-calendar')">─</button>
+        <button class="win-btn maximize" onclick="maximizeWin('win-calendar')">□</button>
+        <button class="win-btn close" onclick="closeWindow('win-calendar')">✕</button>
+      </div>
+    </div>
+    <div class="win-body">
+      <div class="cal-body" id="cal-body"></div>
+    </div>
+  </div>
+
+  <!-- ═══ WINDOW: SETTINGS ═══ -->
+  <div class="win" id="win-settings" style="width:620px;height:440px;top:90px;left:160px;display:none;z-index:100">
+    <div class="win-titlebar" onmousedown="startDrag(event,'win-settings')">
+      <span class="win-icon">⚙️</span>
+      <span class="win-title">Settings</span>
+      <div class="win-controls">
+        <button class="win-btn minimize" onclick="minimizeWin('win-settings')">─</button>
+        <button class="win-btn maximize" onclick="maximizeWin('win-settings')">□</button>
+        <button class="win-btn close" onclick="closeWindow('win-settings')">✕</button>
+      </div>
+    </div>
+    <div class="win-body">
+      <div class="settings-body">
+        <div class="settings-nav">
+          <div class="settings-nav-item active"><span>🏠</span>System</div>
+          <div class="settings-nav-item"><span>🎨</span>Personalization</div>
+          <div class="settings-nav-item"><span>📶</span>Network</div>
+          <div class="settings-nav-item"><span>🔋</span>Battery</div>
+          <div class="settings-nav-item"><span>🔒</span>Privacy</div>
+          <div class="settings-nav-item"><span>🔥</span>Fire Services</div>
+          <div class="settings-nav-item"><span>🔔</span>Notifications</div>
+          <div class="settings-nav-item"><span>ℹ️</span>About</div>
+        </div>
+        <div class="settings-content">
+          <div class="settings-section-title">System Settings</div>
+          <div class="settings-card">
+            <div class="settings-row">
+              <span class="ico">🌙</span>
+              <div class="info"><div class="name">Dark Mode</div><div class="sub">Always fire in the dark</div></div>
+              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+            </div>
+            <div class="settings-row">
+              <span class="ico">🔔</span>
+              <div class="info"><div class="name">Notifications</div><div class="sub">Show alerts and banners</div></div>
+              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+            </div>
+            <div class="settings-row">
+              <span class="ico">🔥</span>
+              <div class="info"><div class="name">Fire Sync</div><div class="sub">Sync with Amazon Fire cloud</div></div>
+              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+            </div>
+            <div class="settings-row">
+              <span class="ico">🔊</span>
+              <div class="info"><div class="name">System Sounds</div><div class="sub">Play UI sound effects</div></div>
+              <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="settings-row">
+              <span class="ico">📍</span>
+              <div class="info"><div class="name">Location Services</div><div class="sub">Allow apps to use your location</div></div>
+              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+            </div>
+          </div>
+          <div class="settings-card">
+            <div class="settings-row">
+              <span class="ico">🖥️</span>
+              <div class="info"><div class="name">Display Resolution</div><div class="sub">1920 × 1080 @ 60Hz</div></div>
+              <span style="font-size:12px;color:var(--text-dim)">Change ›</span>
+            </div>
+            <div class="settings-row">
+              <span class="ico">⚡</span>
+              <div class="info"><div class="name">Performance Mode</div><div class="sub">Fire Boost™ Active</div></div>
+              <span style="font-size:12px;color:var(--fire-orange)">ON</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ WINDOW: FIRE STORE ═══ -->
+  <div class="win" id="win-store" style="width:580px;height:430px;top:100px;left:180px;display:none;z-index:100">
+    <div class="win-titlebar" onmousedown="startDrag(event,'win-store')">
+      <span class="win-icon">🛒</span>
+      <span class="win-title">Fire Store</span>
+      <div class="win-controls">
+        <button class="win-btn minimize" onclick="minimizeWin('win-store')">─</button>
+        <button class="win-btn maximize" onclick="maximizeWin('win-store')">□</button>
+        <button class="win-btn close" onclick="closeWindow('win-store')">✕</button>
+      </div>
+    </div>
+    <div class="win-body" style="padding:16px;overflow-y:auto">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+        <input style="flex:1;background:rgba(255,255,255,0.07);border:1px solid rgba(255,107,0,0.2);border-radius:20px;padding:8px 16px;color:white;font-size:13px;outline:none;font-family:inherit" placeholder="🔍  Search apps, games, media...">
+        <button style="background:linear-gradient(135deg,#FF6B00,#FF4500);border:none;color:white;padding:8px 16px;border-radius:20px;font-size:13px;cursor:pointer;font-weight:600">Search</button>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:rgba(255,107,0,0.8);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px">Featured Apps</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+        ${[
+          ['🎮','Fire Games','Gaming Hub','Free'],
+          ['📺','Prime Video','Streaming','Free'],
+          ['📚','Kindle','E-Books','Free'],
+          ['🎵','Amazon Music','Music','$9.99/mo'],
+          ['🛒','Amazon Shopping','Shop','Free'],
+          ['🌐','Silk Browser','Browser','Free'],
+          ['🏋️','Alexa Fitness','Health','Free'],
+          ['🗣️','Alexa','Voice AI','Free'],
+          ['📰','Fire News','News','Free'],
+        ].map(([ico,name,cat,price])=>`
+          <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:12px;cursor:pointer;transition:all 0.15s" onmouseover="this.style.borderColor='rgba(255,107,0,0.35)';this.style.background='rgba(255,107,0,0.08)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)';this.style.background='rgba(255,255,255,0.04)'">
+            <div style="font-size:28px;margin-bottom:6px">${ico}</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:2px">${name}</div>
+            <div style="font-size:10px;color:var(--text-dim)">${cat}</div>
+            <div style="font-size:11px;color:var(--fire-amber);margin-top:6px;font-weight:600">${price}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  </div>
+
+</div><!-- end desktop -->
+
+<!-- TASKBAR -->
+<div id="taskbar">
+  <button id="start-btn" onclick="toggleStartMenu()" title="Start">
+    <svg viewBox="0 0 22 22" fill="none">
+      <rect x="1" y="1" width="9" height="9" rx="1.5" fill="#FF6B00"/>
+      <rect x="12" y="1" width="9" height="9" rx="1.5" fill="#FF9500"/>
+      <rect x="1" y="12" width="9" height="9" rx="1.5" fill="#FF4500"/>
+      <rect x="12" y="12" width="9" height="9" rx="1.5" fill="#FF6B00"/>
+    </svg>
+  </button>
+
+  <div id="search-bar">
+    <span>🔍</span>
+    <span>Search FireOS…</span>
+  </div>
+
+  <div id="taskbar-apps">
+    <div class="tb-app" ondblclick="openWindow('win-explorer')" id="tb-explorer">
+      <span class="ico">📁</span><span>Files</span>
+    </div>
+    <div class="tb-app" ondblclick="openWindow('win-browser')" id="tb-browser">
+      <span class="ico">🔥</span><span>Browser</span>
+    </div>
+    <div class="tb-app" ondblclick="openWindow('win-notepad')" id="tb-notepad">
+      <span class="ico">📝</span><span>Notepad</span>
+    </div>
+    <div class="tb-app" ondblclick="openWindow('win-store')" id="tb-store">
+      <span class="ico">🛒</span><span>Store</span>
+    </div>
+  </div>
+
+  <div id="systray">
+    <div class="tray-icon" title="Wi-Fi">📶</div>
+    <div class="tray-icon" title="Volume">🔊</div>
+    <div class="tray-icon" title="Battery">🔋</div>
+    <div class="tray-icon" title="Fire Sync" style="color:var(--fire-orange)">🔥</div>
+    <div id="clock">
+      <div id="clock-time">00:00</div>
+      <div id="clock-date">Loading…</div>
+    </div>
+  </div>
+</div>
+
+<!-- START MENU -->
+<div id="start-menu">
+  <input class="start-search" id="start-search" placeholder="🔍  Search apps and settings…">
+
+  <div class="sm-section-title">Pinned Apps</div>
+  <div class="sm-apps">
+    <div class="sm-app" onclick="openWindow('win-browser');toggleStartMenu()">
+      <div class="ico gradient-icon-fire">🔥</div><div class="lbl">Browser</div>
+    </div>
+    <div class="sm-app" onclick="openWindow('win-explorer');toggleStartMenu()">
+      <div class="ico gradient-icon-amber">📁</div><div class="lbl">Files</div>
+    </div>
+    <div class="sm-app" onclick="openWindow('win-settings');toggleStartMenu()">
+      <div class="ico gradient-icon-indigo">⚙️</div><div class="lbl">Settings</div>
+    </div>
+    <div class="sm-app" onclick="openWindow('win-notepad');toggleStartMenu()">
+      <div class="ico gradient-icon-dark">📝</div><div class="lbl">Notepad</div>
+    </div>
+    <div class="sm-app" onclick="openWindow('win-store');toggleStartMenu()">
+      <div class="ico gradient-icon-fire">🛒</div><div class="lbl">Store</div>
+    </div>
+    <div class="sm-app" onclick="openWindow('win-calendar');toggleStartMenu()">
+      <div class="ico gradient-icon-red">📅</div><div class="lbl">Calendar</div>
+    </div>
+    <div class="sm-app" onclick="showNotif('🎵','Music Player','Opening your library...');toggleStartMenu()">
+      <div class="ico gradient-icon-purple">🎵</div><div class="lbl">Music</div>
+    </div>
+    <div class="sm-app" onclick="showNotif('📺','Prime Video','Loading your watchlist...');toggleStartMenu()">
+      <div class="ico gradient-icon-blue">📺</div><div class="lbl">Video</div>
+    </div>
+    <div class="sm-app" onclick="showNotif('📚','Kindle','Opening your library...');toggleStartMenu()">
+      <div class="ico gradient-icon-green">📚</div><div class="lbl">Kindle</div>
+    </div>
+    <div class="sm-app" onclick="showNotif('🗣️','Alexa','Hey! How can I help you today?');toggleStartMenu()">
+      <div class="ico gradient-icon-teal">🗣️</div><div class="lbl">Alexa</div>
+    </div>
+    <div class="sm-app" onclick="showNotif('📸','Camera','Camera ready!');toggleStartMenu()">
+      <div class="ico gradient-icon-amber">📸</div><div class="lbl">Camera</div>
+    </div>
+    <div class="sm-app" onclick="showNotif('🌤️','Weather','Partly cloudy, 18°C. Feels like 15°C.');toggleStartMenu()">
+      <div class="ico gradient-icon-blue">🌤️</div><div class="lbl">Weather</div>
+    </div>
+  </div>
+
+  <div class="sm-section-title">Recent</div>
+  <div class="sm-recents">
+    <div class="sm-recent"><span class="ico">📄</span><div class="info"><div class="name">Budget_Q4.xlsx</div><div class="sub">Today at 2:31 PM</div></div></div>
+    <div class="sm-recent"><span class="ico">📝</span><div class="info"><div class="name">Project Notes.txt</div><div class="sub">Yesterday at 11:14 AM</div></div></div>
+    <div class="sm-recent"><span class="ico">🖼️</span><div class="info"><div class="name">Screenshot_0319.png</div><div class="sub">2 days ago</div></div></div>
+  </div>
+
+  <div class="sm-footer">
+    <div class="sm-user">
+      <div class="sm-avatar">F</div>
+      <span class="sm-username">Fire User</span>
+    </div>
+    <div class="sm-power-btns">
+      <button class="sm-power-btn" title="Lock" onclick="showNotif('🔒','FireOS','Screen locked!')">🔒</button>
+      <button class="sm-power-btn" title="Restart" onclick="showNotif('🔄','FireOS','Restarting... Just kidding 😄')">🔄</button>
+      <button class="sm-power-btn" title="Shutdown" onclick="showNotif('⏻','FireOS','Shutting down... Just kidding! 🔥')">⏻</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONTEXT MENU -->
+<div id="ctx-menu">
+  <div class="ctx-item" onclick="showNotif('🖼️','Wallpaper','Wallpaper options coming soon!');hideCtxMenu()"><span class="ico">🖼️</span>Change Wallpaper</div>
+  <div class="ctx-item" onclick="openWindow('win-settings');hideCtxMenu()"><span class="ico">⚙️</span>Display Settings</div>
+  <div class="ctx-divider"></div>
+  <div class="ctx-item" onclick="showNotif('🔃','Desktop','Desktop refreshed!');hideCtxMenu()"><span class="ico">🔃</span>Refresh</div>
+  <div class="ctx-item" onclick="hideCtxMenu()"><span class="ico">📋</span>Paste</div>
+  <div class="ctx-divider"></div>
+  <div class="ctx-item" onclick="openWindow('win-settings');hideCtxMenu()"><span class="ico">🔥</span>Fire Settings</div>
+  <div class="ctx-item" onclick="showNotif('ℹ️','FireOS 1.0','Version 1.0.0 — Built with 🔥');hideCtxMenu()"><span class="ico">ℹ️</span>About FireOS</div>
+</div>
+
+<!-- NOTIFICATION AREA -->
+<div id="notif-area"></div>
+
+<script>
+// ══════════════════════════════════════════
+// CLOCK
+// ══════════════════════════════════════════
+function updateClock() {
+  const now = new Date();
+  const t = now.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
+  const d = now.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+  document.getElementById('clock-time').textContent = t;
+  document.getElementById('clock-date').textContent = d;
+}
+updateClock();
+setInterval(updateClock, 10000);
+
+// ══════════════════════════════════════════
+// CALENDAR
+// ══════════════════════════════════════════
+let calDate = new Date();
+function renderCalendar() {
+  const el = document.getElementById('cal-body');
+  if(!el) return;
+  const now = new Date();
+  const y = calDate.getFullYear(), m = calDate.getMonth();
+  const monthName = calDate.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  const firstDay = new Date(y,m,1).getDay();
+  const daysInMonth = new Date(y,m+1,0).getDate();
+  const days = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  let cells = '';
+  for(let i=0;i<firstDay;i++) {
+    const d = new Date(y,m,0).getDate()-firstDay+i+1;
+    cells += `<div class="cal-day other-month">${d}</div>`;
+  }
+  for(let d=1;d<=daysInMonth;d++){
+    const isToday = d===now.getDate()&&m===now.getMonth()&&y===now.getFullYear();
+    cells += `<div class="cal-day${isToday?' today':''}">${d}</div>`;
+  }
+  el.innerHTML = `
+    <div class="cal-header">
+      <button class="cal-nav" onclick="calDate.setMonth(calDate.getMonth()-1);renderCalendar()">‹</button>
+      <div class="cal-month">${monthName}</div>
+      <button class="cal-nav" onclick="calDate.setMonth(calDate.getMonth()+1);renderCalendar()">›</button>
+    </div>
+    <div class="cal-grid">
+      ${days.map(d=>`<div class="cal-day-header">${d}</div>`).join('')}
+      ${cells}
+    </div>
+    <div class="cal-events">
+      <div style="font-size:11px;font-weight:700;color:rgba(255,107,0,0.8);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">Today's Events</div>
+      <div class="cal-event"><div><div class="time">9:00 AM</div><div class="title">Team Standup</div></div></div>
+      <div class="cal-event"><div><div class="time">2:30 PM</div><div class="title">Product Review</div></div></div>
+      <div class="cal-event"><div><div class="time">5:00 PM</div><div class="title">Fire OS Update</div></div></div>
+    </div>
+  `;
+}
+renderCalendar();
+
+// ══════════════════════════════════════════
+// START MENU
+// ══════════════════════════════════════════
+let startOpen = false;
+function toggleStartMenu() {
+  startOpen = !startOpen;
+  document.getElementById('start-menu').classList.toggle('open', startOpen);
+  document.getElementById('start-btn').classList.toggle('active', startOpen);
+}
+document.addEventListener('click', (e) => {
+  if(startOpen && !e.target.closest('#start-menu') && !e.target.closest('#start-btn')) {
+    startOpen = false;
+    document.getElementById('start-menu').classList.remove('open');
+    document.getElementById('start-btn').classList.remove('active');
+  }
+  if(!e.target.closest('#ctx-menu')) hideCtxMenu();
+});
+
+// ══════════════════════════════════════════
+// WINDOWS
+// ══════════════════════════════════════════
+let zTop = 200;
+const wins = {};
+
+function openWindow(id) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.style.display = 'flex';
+  bringToFront(id);
+  wins[id] = wins[id] || { open: true };
+  wins[id].open = true;
+  updateTaskbar();
+}
+
+function closeWindow(id) {
+  const el = document.getElementById(id);
+  if(el) el.style.display = 'none';
+  if(wins[id]) wins[id].open = false;
+  updateTaskbar();
+}
+
+function minimizeWin(id) {
+  const el = document.getElementById(id);
+  if(el) el.style.display = 'none';
+  if(wins[id]) wins[id].open = false;
+  updateTaskbar();
+}
+
+function maximizeWin(id) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  if(el.dataset.maximized === '1') {
+    el.style.width = el.dataset.pw;
+    el.style.height = el.dataset.ph;
+    el.style.left = el.dataset.pl;
+    el.style.top = el.dataset.pt;
+    el.dataset.maximized = '0';
+  } else {
+    el.dataset.pw = el.style.width;
+    el.dataset.ph = el.style.height;
+    el.dataset.pl = el.style.left;
+    el.dataset.pt = el.style.top;
+    el.style.left = '0'; el.style.top = '0';
+    el.style.width = '100%';
+    el.style.height = 'calc(100vh - 48px)';
+    el.dataset.maximized = '1';
+  }
+}
+
+function bringToFront(id) {
+  zTop++;
+  document.getElementById(id).style.zIndex = zTop;
+  document.querySelectorAll('.win').forEach(w => w.classList.remove('focused'));
+  document.getElementById(id).classList.add('focused');
+}
+
+function updateTaskbar() {}
+
+// Window click to focus
+document.querySelectorAll('.win').forEach(w => {
+  w.addEventListener('mousedown', () => bringToFront(w.id));
+});
+
+// ══════════════════════════════════════════
+// DRAG
+// ══════════════════════════════════════════
+let dragging = null, dragOffX = 0, dragOffY = 0;
+
+function startDrag(e, id) {
+  if(e.target.classList.contains('win-btn')) return;
+  dragging = id;
+  const el = document.getElementById(id);
+  const rect = el.getBoundingClientRect();
+  dragOffX = e.clientX - rect.left;
+  dragOffY = e.clientY - rect.top;
+  bringToFront(id);
+  e.preventDefault();
+}
+
+document.addEventListener('mousemove', (e) => {
+  if(!dragging) return;
+  const el = document.getElementById(dragging);
+  const deskH = window.innerHeight - 48;
+  let x = e.clientX - dragOffX;
+  let y = e.clientY - dragOffY;
+  x = Math.max(0, Math.min(x, window.innerWidth - el.offsetWidth));
+  y = Math.max(0, Math.min(y, deskH - el.offsetHeight));
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+});
+
+document.addEventListener('mouseup', () => { dragging = null; });
+
+// ══════════════════════════════════════════
+// NOTIFICATIONS
+// ══════════════════════════════════════════
+let notifCount = 0;
+function showNotif(icon, title, body) {
+  const area = document.getElementById('notif-area');
+  const id = 'notif-' + (++notifCount);
+  const time = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  const el = document.createElement('div');
+  el.className = 'notif'; el.id = id;
+  el.innerHTML = `
+    <div class="notif-icon">${icon}</div>
+    <div class="notif-content">
+      <div class="notif-title">${title}</div>
+      <div class="notif-body">${body}</div>
+      <div class="notif-time">${time}</div>
+    </div>
+    <button class="notif-close" onclick="dismissNotif('${id}')">✕</button>
+  `;
+  area.appendChild(el);
+  setTimeout(() => dismissNotif(id), 5000);
+}
+
+function dismissNotif(id) {
+  const el = document.getElementById(id);
+  if(el) {
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(60px)';
+    el.style.transition = 'all 0.3s ease';
+    setTimeout(() => el.remove(), 300);
+  }
+}
+
+// ══════════════════════════════════════════
+// CONTEXT MENU
+// ══════════════════════════════════════════
+function showCtxMenu(e) {
+  e.preventDefault();
+  const m = document.getElementById('ctx-menu');
+  m.style.left = Math.min(e.clientX, window.innerWidth - 200) + 'px';
+  m.style.top = Math.min(e.clientY, window.innerHeight - 240) + 'px';
+  m.classList.add('show');
+}
+function hideCtxMenu() {
+  document.getElementById('ctx-menu').classList.remove('show');
+}
+
+// ══════════════════════════════════════════
+// WELCOME NOTIFICATION
+// ══════════════════════════════════════════
+setTimeout(() => showNotif('🔥','Welcome to FireOS!','Double-click icons or try the Start menu to get going 🚀'), 800);
+setTimeout(() => showNotif('📶','Connected','Fire Network — Blazing fast connection established.'), 2400);
+</script>
+</body>
+</html>
